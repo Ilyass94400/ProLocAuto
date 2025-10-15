@@ -22,18 +22,14 @@ Route::get('/', function () {
 });
 
 use App\Http\Controllers\Auth\ClientController;
+
 Route::get('/login', [ClientController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [ClientController::class, 'login']);
 Route::post('/logout', [ClientController::class, 'logout'])->name('logout');
-Route::get('/', function(){
-    return view('acceuil');
-});
-Route::get('/reservation', function(){
-    return "Liste de vos réservations";
-});
-Route::get('/recherche', function(){
-    return "Recherche";
-});
-Route::get('/contact', function(){
-    return "Page de contact";
-});
+
+use App\Http\Controllers\Auth\AuthController;
+
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
+Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+

@@ -32,4 +32,6 @@ use App\Http\Controllers\Auth\AuthController;
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
+use App\Http\Controllers\OfferController;
 
+Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');

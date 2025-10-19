@@ -15,17 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-
-Route::get('/', function () {
-    return ('Bienvenue, chers entrepreneurs !');
-});
-
 use App\Http\Controllers\Auth\ClientController;
 
 Route::get('/login', [ClientController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [ClientController::class, 'login']);
 Route::post('/logout', [ClientController::class, 'logout'])->name('logout');
+Route::get('/login', function () {return view('login');})->name('login');
 
 use App\Http\Controllers\Auth\AuthController;
 
@@ -35,3 +30,23 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 use App\Http\Controllers\OfferController;
 
 Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
+
+
+use App\Http\Controllers\ReviewController;
+
+Route::get('/avis', [ReviewController::class, 'index'])->name('reviews.index');
+Route::post('/avis', [ReviewController::class, 'store'])->name('reviews.store');
+
+//page d'accueil améliorée
+
+Route::get('/', function () {
+    return view('prolocauto');
+});
+
+use App\Http\Controllers\ClientAreaController;
+
+Route::middleware(['auth'])->group(function () {
+ 
+    Route::get('/clients/accueil', [ClientAreaController::class, 'index'])->name('clients.accueil');
+});
+

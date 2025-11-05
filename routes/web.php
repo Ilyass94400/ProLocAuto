@@ -44,9 +44,11 @@ Route::get('/', function () {
 });
 
 use App\Http\Controllers\ClientAreaController;
+use App\Http\Controllers\AccountController;
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/clients/accueil', [ClientAreaController::class, 'index'])->name('clients.accueil');
+    Route::get('/clients/mon-compte', [AccountController::class, 'index'])->name('clients.mon-compte');
 });
 
 

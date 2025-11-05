@@ -216,7 +216,7 @@
 
             @auth
                 {{-- Utilisateur connecté : Afficher Mon Compte et Déconnexion --}}
-                <a href="{{ route('clients.accueil') }}">Mon Compte</a> 
+                <a href="{{ route('clients.mon-compte') }}">Mon Compte</a> 
                 
                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                     @csrf

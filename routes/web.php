@@ -46,7 +46,11 @@ Route::get('/', function () {
 use App\Http\Controllers\ClientAreaController;
 
 Route::middleware(['auth'])->group(function () {
- 
     Route::get('/clients/accueil', [ClientAreaController::class, 'index'])->name('clients.accueil');
 });
 
+
+use App\Http\Controllers\ContactController;
+
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');

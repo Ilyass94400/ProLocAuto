@@ -229,6 +229,7 @@
             <a href="{{ route('offers.index') }}">Espaces</a>
             <a href="{{ url('/tarifs') }}">Tarifs</a>
             <a href="{{ url('/contact') }}">Contact</a>
+            <a href="{{ url('/avis') }}">Avis</a>
             <a href="{{ route('login') }}" class="btn-connexion">Connexion</a>
         </div>
     </nav>

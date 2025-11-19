@@ -212,6 +212,7 @@
             <a href="{{ route('offers.index') }}">Espaces</a>
             <a href="{{ url('/tarifs') }}">Tarifs</a>
             <a href="{{ url('/contact') }}">Contact</a>
+            <a href="{{ url('/avis') }}">Avis</a>
 
             @auth
                 {{-- Utilisateur connecté : Afficher Mon Compte et Déconnexion --}}

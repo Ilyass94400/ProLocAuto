@@ -5,17 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class avis extends Model
+class Avis extends Model
 {
     use HasFactory;
+    
+    protected $table = 'avis'; 
     protected $fillable = [
         'auteur_nom',
         'note',
         'commentaire',
     ];
-    
-    public function espace()
-    {
-        return $this->belongsTo(Espace::class);
-}
 }

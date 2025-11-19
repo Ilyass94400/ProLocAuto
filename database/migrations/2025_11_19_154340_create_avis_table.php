@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('avis', function (Blueprint $table) {
             $table->id();
+            $table->string('auteur_nom', 255)->default('Anonyme');
+            $table->integer('note')->default(5); 
+            $table->text('commentaire');
             $table->timestamps();
         });
     }

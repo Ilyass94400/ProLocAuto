@@ -3,74 +3,44 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Avis;
+use App\Models\avis; // Assurez-vous que l'orthographe est correcte
 
 class AvisController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Affiche la liste des avis et le formulaire.
      */
     public function index()
     {
-		$avis = Avis::latest()->get(); 
-        return view('avis.index', compact('avis'));
+        // Récupère tous les avis, triés par les plus récents
+        $avis = Avis::latest()->get(); 
+        
+        // Calcul de la note moyenne pour l'affichage
+        $noteMoyenne = $avis->avg('note');
+
+        return view('avis.index', compact('avis', 'noteMoyenne'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Gère la soumission d'un nouvel avis, SANS VALIDATION.
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'auteur_nom' => 'required|max:255',
-            'note' => 'required|integer|min:1|max:5', 
-            'commentaire' => 'required|min:5',
-        ]);
+        // ATTENTION : Aucune validation des données (required, min, max, etc.)
+        
+        try {
+            Avis::create([
+                // Utilise le champ 'name' pour l'auteur (doit correspondre au formulaire)
+                'auteur_nom' => $request->input('name', 'Client Anonyme'),
+                'note' => $request->input('rating', 5), // Assurez-vous que le nom du champ est 'rating'
+                'commentaire' => $request->input('comment', 'Commentaire non fourni.'), // Assurez-vous que le nom du champ est 'comment'
+            ]);
+        } catch (\Exception $e) {
+             // Afficher l'erreur de la base de données
+             return back()->withErrors(['db_error' => 'Erreur lors de l\'enregistrement de l\'avis.']);
+        }
 
-        Avis::create($request->all());
-
-        return redirect()->route('avis.index')
-                         ->with('success', 'Votre avis a été soumis avec succès!');
-    }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Redirection vers la page d'index avec un message de succès
+        return redirect()->route('avis.index')->with('success', 'Votre avis a été soumis avec succès !');
     }
 }

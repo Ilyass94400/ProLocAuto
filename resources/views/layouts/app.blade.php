@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -8,8 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
-    <header class="bg-blue-600 text-white p-4">
-        <h1 class="text-2xl font-bold">ProLocAuto</h1>
+    
+    <!-- HEADER AVEC LE LIEN AJOUTÉ -->
+    <header class="bg-blue-600 text-white p-4 flex justify-between items-center">
+        
+        <!-- Titre/Logo principal -->
+        <a href="{{ url('/') }}" class="text-2xl font-bold hover:text-gray-200 transition duration-150">ProLocAuto</a>
+       
     </header>
 
     <main class="p-6">

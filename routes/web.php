@@ -34,13 +34,18 @@ Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
 
 use App\Http\Controllers\ReviewController;
 
-Route::get('/avis', [ReviewController::class, 'index'])->name('reviews.index');
-Route::post('/avis', [ReviewController::class, 'store'])->name('reviews.store');
+Route::get('/review', [ReviewController::class, 'index'])->name('reviews.index');
+Route::post('/review', [ReviewController::class, 'store'])->name('reviews.store');
 
 //page d'accueil améliorée
 
 Route::get('/', function () {
-    return view('prolocauto');
+    if(Auth::check()){
+        return redirect()->route('clients.accueil');
+    }
+    else{
+        return view('prolocauto');
+    }
 });
 
 use App\Http\Controllers\ClientAreaController;
@@ -56,3 +61,11 @@ use App\Http\Controllers\ContactController;
 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+
+use App\Http\Controllers\TarifController;
+
+Route::get('/tarifs', [TarifController::class, 'index'])->name('tarif');
+
+use App\Http\Controllers\AvisController; 
+
+Route::resource('avis', AvisController::class)->only(['index', 'store']);

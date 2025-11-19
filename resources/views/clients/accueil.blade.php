@@ -150,7 +150,6 @@
             transform: translateY(-2px); 
         }
 
-        /* --- WHY CHOOSE US SECTION (AVANTAGES) --- */
         .why-choose-us {
             padding: 80px 40px;
             background-color: #fff;

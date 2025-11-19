@@ -24,8 +24,6 @@ class ClientController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
-            // REDIRECTION VERS LA NOUVELLE PAGE CLIENT SÉCURISÉE
             return redirect()->route('clients.accueil'); 
         }
 

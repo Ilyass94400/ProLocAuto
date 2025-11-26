@@ -37,8 +37,6 @@ use App\Http\Controllers\ReviewController;
 Route::get('/review', [ReviewController::class, 'index'])->name('reviews.index');
 Route::post('/review', [ReviewController::class, 'store'])->name('reviews.store');
 
-//page d'accueil améliorée
-
 Route::get('/', function () {
     if(Auth::check()){
         return redirect()->route('clients.accueil');

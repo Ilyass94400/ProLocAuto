@@ -69,3 +69,11 @@ Route::get('/tarifs', [TarifController::class, 'index'])->name('tarif');
 use App\Http\Controllers\AvisController; 
 
 Route::resource('avis', AvisController::class)->only(['index', 'store']);
+
+
+
+Route::get('/admin', function () {
+    return 'salut admin';
+});
+
+

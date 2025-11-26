@@ -183,7 +183,7 @@
                     <li><i class="fas fa-check"></i> Imprimante Pro & Scanner</li>
                 </ul>
 
-                <a href="#" class="btn-select">Choisir ce plan</a>
+                <a href="{{ route('contact') }}" class="btn-select">Choisir ce plan</a>
             </div>
 
             <div class="pricing-card">

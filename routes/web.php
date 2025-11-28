@@ -72,8 +72,24 @@ Route::resource('avis', AvisController::class)->only(['index', 'store']);
 
 
 
-Route::get('/admin', function () {
-    return 'salut admin';
-});
+//Route::get('/admin', function () {
+ //   return 'salut admin';
+//});
+
+use App\Http\Controllers\AdminController;
+// 1. Page de connexion (Pas de protection)
+Route::get('/admin', [AdminController::class, 'showLogin'])->name('login');
+
+// 2. Action de connexion
+Route::post('/admin', [AdminController::class, 'authenticate'])->name('admin.auth');
+
+// 3. Page d'accueil Admin
+// C'EST ICI QUE ÇA CHANGE : on ajoute ':admin' au middleware
+Route::get('/accueiladmin', [AdminController::class, 'index'])
+    ->name('admin.home')
+    ->middleware('auth:admin');
+
+// 4. Déconnexion
+Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 
 

@@ -3,12 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-// On ajoute cette ligne pour gérer l'authentification plus tard si besoin
-use Illuminate\Foundation\Auth\User as Authenticatable; 
+// 1. On importe la classe qui gère l'authentification
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-// Attention : On change 'extends Model' par 'extends Authenticatable'
-// C'est une astuce pour que Laravel considère ce modèle comme un utilisateur connectable
+// 2. IMPORTANT : On étend 'Authenticatable' et pas 'Model'
 class Admin extends Authenticatable
 {
     use HasFactory;
@@ -19,4 +17,10 @@ class Admin extends Authenticatable
         'mail',
         'motdepasse',
     ];
+
+    // 3. On dit à Laravel : "Mon mot de passe est dans la colonne 'motdepasse'"
+    public function getAuthPassword()
+    {
+        return $this->motdepasse;
+    }
 }

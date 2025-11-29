@@ -10,11 +10,20 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Bienvenue Admin !</h1>
-            <form action="{{ route('logout') }}" method="POST">
+            <!-- J'ai mis 'admin.logout' pour que ça marche avec tes routes -->
+            <form action="{{ route('admin.logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-danger">Se déconnecter</button>
             </form>
         </div>
+
+        <!-- --- LE BOUTON AJOUTÉ --- -->
+        <div class="mb-4">
+            <a href="{{ route('admin.annonce.create') }}" class="btn btn-primary">
+                + Aller vers la création d'annonce
+            </a>
+        </div>
+        <!-- ------------------------ -->
 
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">Vos Clients</div>

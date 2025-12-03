@@ -22,9 +22,6 @@
             color: var(--text-color-dark);
         }
        
-        /* Styles de la Navbar et Footer (doivent être importés de votre layout global) */
-        /* ... (Ajoutez ici les styles de votre navbar et footer si vous ne les utilisez pas dans un layout) ... */
-
         /* --- Contenu de la Page de Tarifs --- */
         .pricing-page-container {
             max-width: 1200px;
@@ -146,6 +143,7 @@
 
         <div class="pricing-grid">
            
+            <!-- CARTE TYPE 1 : NOMADE -->
             <div class="pricing-card">
                 <div class="card-header">
                     <h2>Nomade</h2>
@@ -163,9 +161,11 @@
                     <li><i class="fas fa-times" style="color:#dc3545;"></i> Salle de réunion dédiée</li>
                 </ul>
 
-                <a href="#" class="btn-select">Choisir ce plan</a>
+                <!-- LIEN MODIFIÉ : Pointe vers offre.a (Type 1) -->
+                <a href="{{ route('offre.a') }}" class="btn-select">Voir les offres Nomades</a>
             </div>
 
+            <!-- CARTE TYPE 2 : RÉSIDENT -->
             <div class="pricing-card featured">
                 <div class="card-header">
                     <h2>Résident</h2>
@@ -183,9 +183,11 @@
                     <li><i class="fas fa-check"></i> Imprimante Pro & Scanner</li>
                 </ul>
 
-                <a href="#" class="btn-select">Choisir ce plan</a>
+                <!-- LIEN MODIFIÉ : Pointe vers offre.b (Type 2) -->
+                <a href="{{ route('offre.b') }}" class="btn-select">Voir les offres Résidents</a>
             </div>
 
+            <!-- CARTE TYPE 3 : ENTREPRISE -->
             <div class="pricing-card">
                 <div class="card-header">
                     <h2>Entreprise</h2>
@@ -203,7 +205,8 @@
                     <li><i class="fas fa-check"></i> Réseaux et événements ProLocAuto</li>
                 </ul>
 
-                <a href="#" class="btn-select">Nous Contacter</a>
+                <!-- LIEN MODIFIÉ : Pointe vers offre.c (Type 3) -->
+                <a href="{{ route('offre.c') }}" class="btn-select">Voir les offres Entreprises</a>
             </div>
            
         </div>
@@ -213,6 +216,7 @@
         </div>
     </div>
 
-    {{-- @include('layouts.footer') --}}
+    
 </body>
 </html>
+

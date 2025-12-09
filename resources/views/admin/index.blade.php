@@ -8,50 +8,64 @@
 <body class="p-4 bg-light">
 
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        
+        <!-- EN-TÊTE -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
             <h1>Bienvenue Admin !</h1>
-            <!-- J'ai mis 'admin.logout' pour que ça marche avec tes routes -->
             <form action="{{ route('admin.logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn btn-danger">Se déconnecter</button>
             </form>
         </div>
 
-        <!-- --- LE BOUTON AJOUTÉ --- -->
-        <div class="mb-4">
-            <a href="{{ route('admin.annonce.create') }}" class="btn btn-primary">
-                + Aller vers la création d'annonce
+        <!-- MESSAGES SUCCÈS -->
+        @if(session('success'))
+            <div class="alert alert-success mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <!-- BOUTONS D'ACTION -->
+        <div class="mb-4 text-end">
+            <a href="{{ route('admin.annonces.manage') }}" class="btn btn-primary shadow-sm me-2">
+                ✏️ Gérer les Annonces
+            </a>
+            <a href="{{ route('admin.reservation.page') }}" class="btn btn-success shadow-sm">
+                📅 Saisir une Réservation
             </a>
         </div>
-        <!-- ------------------------ -->
 
+        <!-- TABLEAU DES UTILISATEURS INSCRITS -->
         <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">Vos Clients</div>
-            <div class="card-body">
-                <table class="table table-striped">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Utilisateurs Inscrits (Site Web)</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped mb-0">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Entreprise</th>
-                            <th>Téléphone</th>
+                            <th>Nom complet</th>
+                            <th>Email</th>
+                            <th>Inscrit le</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($clients as $client)
+                        <!-- On boucle sur la variable $users envoyée par le contrôleur -->
+                        @foreach($users as $user)
                             <tr>
-                                <td>{{ $client->id }}</td>
-                                <td>{{ $client->nom }}</td>
-                                <td>{{ $client->prenom }}</td>
-                                <td>{{ $client->nomentreprise ?? 'Particulier' }}</td>
-                                <td>{{ $client->telephone }}</td>
+                                <td>{{ $user->id }}</td>
+                                <td class="fw-bold">{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                <!-- On formate la date pour que ce soit joli (d/m/Y) -->
+                                <td>{{ $user->created_at->format('d/m/Y') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 
 </body>

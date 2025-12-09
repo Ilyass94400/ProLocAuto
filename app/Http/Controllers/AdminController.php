@@ -6,14 +6,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
-use App\Models\User;        // <--- C'est eux qu'on veut afficher !
+use App\Models\User;
 use App\Models\Annonce;
 use App\Models\Reservation;
+use App\Models\Commercial;
 
 class AdminController extends Controller
 {
     // --- 1. CONNEXION ---
-    public function showLogin() { return view('admin.login'); }
+    public function showLogin() {
+        return view('admin.login');
+    }
 
     public function authenticate(Request $request) {
         $request->validate(['mail' => 'required|email', 'motdepasse' => 'required']);
@@ -27,13 +30,9 @@ class AdminController extends Controller
         return back()->withErrors(['mail' => 'Erreur login']);
     }
 
-    // --- 2. ACCUEIL (MODIFIÉ) ---
+    // --- 2. ACCUEIL ---
     public function index() {
-        // AVANT : $clients = Client::all();
-        // MAINTENANT : On récupère les vrais utilisateurs inscrits
         $users = User::all();
-        
-        // On envoie la variable $users à la vue
         return view('admin.index', compact('users'));
     }
 
@@ -88,7 +87,33 @@ class AdminController extends Controller
         return redirect()->route('admin.home')->with('success', 'Réservation validée !');
     }
 
-    // --- 5. DÉCONNEXION ---
+    // --- 5. GESTION DES COMMERCIAUX ---
+    public function createCommercial()
+    {
+        $commercials = Commercial::all();
+        return view('admin.commercial.create', compact('commercials'));
+    }
+
+    public function storeCommercial(Request $request)
+    {
+        $request->validate([
+            'nom' => 'required',
+            'prenom' => 'required',
+            'email' => 'required|email|unique:commercials,email',
+            'password' => 'required|min:4'
+        ]);
+
+        Commercial::create([
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'email' => $request->email,
+            'password' => Hash::make($request->password)
+        ]);
+
+        return redirect()->route('admin.commercial.create')->with('success', 'Commercial créé avec succès !');
+    }
+
+    // --- 6. DÉCONNEXION ---
     public function logout(Request $request) {
         Auth::guard('admin')->logout();
         $request->session()->invalidate();

@@ -78,3 +78,11 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin/reservation/store', [AdminController::class, 'storeManualReservation'])->name('admin.reservation.store');
     // ----------------------------------------------------------------
 });
+
+// --- GESTION DES COMMERCIAUX ---
+    
+    // 1. Afficher la page de création (GET)
+    Route::get('/admincommercial', [AdminController::class, 'createCommercial'])->name('admin.commercial.create');
+
+    // 2. Enregistrer le commercial (POST)
+    Route::post('/admincommercial', [AdminController::class, 'storeCommercial'])->name('admin.commercial.store');

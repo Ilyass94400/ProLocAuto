@@ -18,7 +18,7 @@
             </form>
         </div>
 
-        <!-- MESSAGES SUCCÈS -->
+        <!-- MESSAGES SUCCÈS (pour afficher les confirmations) -->
         @if(session('success'))
             <div class="alert alert-success mb-4">
                 {{ session('success') }}
@@ -26,12 +26,20 @@
         @endif
 
         <!-- BOUTONS D'ACTION -->
-        <div class="mb-4 text-end">
-            <a href="{{ route('admin.annonces.manage') }}" class="btn btn-primary shadow-sm me-2">
-                ✏️ Gérer les Annonces
+        <div class="mb-4 text-end d-flex gap-2 justify-content-end">
+            <!-- Bouton Annonces (Bleu) -->
+            <a href="{{ route('admin.annonces.manage') }}" class="btn btn-primary shadow-sm">
+                ✏️ Annonces
             </a>
+
+            <!-- Bouton Réservation (Vert) -->
             <a href="{{ route('admin.reservation.page') }}" class="btn btn-success shadow-sm">
-                📅 Saisir une Réservation
+                📅 Réservations
+            </a>
+
+            <!-- Bouton Commerciaux (Info) -->
+            <a href="{{ route('admin.commercial.create') }}" class="btn btn-info text-white shadow-sm">
+                👥 Commerciaux
             </a>
         </div>
 

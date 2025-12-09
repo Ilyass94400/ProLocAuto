@@ -15,6 +15,7 @@ use App\Http\Controllers\TarifController;
 use App\Http\Controllers\AvisController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\CommercialAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,3 +87,21 @@ Route::middleware(['auth:admin'])->group(function () {
 
     // 2. Enregistrer le commercial (POST)
     Route::post('/admincommercial', [AdminController::class, 'storeCommercial'])->name('admin.commercial.store');
+
+
+    
+
+Route::prefix('commercial')->name('commercial.')->group(function () {
+    
+    // Pour les commerciaux NON connectés (Guest)
+    Route::middleware('guest:commercial')->group(function () {
+        Route::get('/', [CommercialAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('/login', [CommercialAuthController::class, 'login'])->name('login.submit');
+    });
+
+    // Pour les commerciaux CONNECTÉS (Auth)
+    Route::middleware('auth:commercial')->group(function () {
+        Route::get('/dashboard', [CommercialAuthController::class, 'dashboard'])->name('dashboard');
+        Route::post('/logout', [CommercialAuthController::class, 'logout'])->name('logout');
+    });
+});

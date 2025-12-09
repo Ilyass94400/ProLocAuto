@@ -41,13 +41,18 @@ return [
             'provider' => 'users',
         ],
 
-        // --- AJOUTE CE BLOC ---
+        
         'admin' => [
             'driver' => 'session',
             'provider' => 'admins',
         ],
-        // ----------------------
+        
+        'commercial' => [
+        'driver' => 'session',
+        'provider' => 'commercials',
     ],
+],
+    
 
     
 
@@ -79,7 +84,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
-        // ----------------------
+        'commercials' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Commercial::class,
+        ],
     ],
 
     /*

@@ -123,7 +123,6 @@
     
     <div class="page-container">
         
-        {{-- BOUTON DE REDIRECTION VERS L'ACCUEIL --}}
         <div class="back-to-home">
             <a href="{{ route('clients.accueil') }}" class="btn-home">
                 <i class="fas fa-arrow-left"></i> ProLocAuto

@@ -39,13 +39,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($clients as $client)
+                        @foreach($users as $users)
                             <tr>
-                                <td>{{ $client->id }}</td>
-                                <td>{{ $client->nom }}</td>
-                                <td>{{ $client->prenom }}</td>
-                                <td>{{ $client->nomentreprise ?? 'Particulier' }}</td>
-                                <td>{{ $client->telephone }}</td>
+                                <td>{{ $users->id }}</td>
+                                <td>{{ $users->nom }}</td>
+                                <td>{{ $users->prenom }}</td>
+                                <td>{{ $users->nomentreprise ?? 'Particulier' }}</td>
+                                <td>{{ $users->telephone }}</td>
                             </tr>
                         @endforeach
                     </tbody>

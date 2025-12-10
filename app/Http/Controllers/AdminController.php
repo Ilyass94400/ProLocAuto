@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
-use App\Models\Client;
+use App\Models\User;
 use App\Models\Annonce; // <--- INDISPENSABLE
 
 class AdminController extends Controller
@@ -30,9 +30,9 @@ class AdminController extends Controller
 
     // --- 2. TABLEAU DE BORD ---
     public function index() {
-        $clients = Client::all();
+        $users = User::all();
         $annonces = Annonce::all();
-        return view('admin.index', compact('clients', 'annonces'));
+        return view('admin.index', compact('users', 'annonces'));
     }
 
     // --- 3. GESTION DES ANNONCES (C'EST ÇA QU'IL TE MANQUAIT !) ---

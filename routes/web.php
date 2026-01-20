@@ -24,7 +24,7 @@ use App\Http\Controllers\DemandeController;
 |--------------------------------------------------------------------------
 */
 
-// --- 1. AUTHENTIFICATION CLIENTS (Table Users) ---
+// --- 1. AUTHENTIFICATION CLIENTS ---
 Route::get('/login', [ClientController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [ClientController::class, 'login']);
 Route::post('/logout', [ClientController::class, 'logout'])->name('logout');
@@ -49,44 +49,54 @@ Route::get('/offrea', [TarifController::class, 'showA'])->name('offre.a');
 Route::get('/offreb', [TarifController::class, 'showB'])->name('offre.b'); 
 Route::get('/offrec', [TarifController::class, 'showC'])->name('offre.c'); 
 
-// --- 3. ESPACE CLIENT CONNECTÉ (Table Users) ---
+// --- 3. ESPACE CLIENT CONNECTÉ ---
 Route::middleware(['auth'])->group(function () {
     Route::get('/clients/accueil', [ClientAreaController::class, 'index'])->name('clients.accueil');
     Route::get('/clients/mon-compte', [AccountController::class, 'index'])->name('clients.mon-compte');
     Route::get('/clients/dashboard-perso', [AccountController::class, 'dashboard'])->name('clients.dashboard.tableaudebord');
+    
+    // Notifications (Récupérées depuis la BDD via AccountController)
+    Route::get('/clients/notification', [AccountController::class, 'notifications'])->name('clients.notifications');
+
+    // Profil
     Route::put('/clients/profile/update', [AccountController::class, 'updateProfile'])->name('clients.profile.update');
 
-    // Réservation
+    // Réservation (Processus Client)
     Route::get('/reserver/{id}', [DemandeController::class, 'showForm'])->name('client.reservation.form');
     Route::post('/reserver/{id}', [DemandeController::class, 'submitForm'])->name('client.reserver.submit');
+    
+    // Actions sur les réservations (Modifier / Annuler)
     Route::put('/reservation/{id}', [ReservationController::class, 'update'])->name('reservation.update');
     Route::post('/reservation/{id}/annuler', [ReservationController::class, 'annuler'])->name('reservation.annuler');
     
-    // Anciennes routes
+    // Anciennes routes (Legacy)
     Route::get('/reservation/{id}', [ReservationController::class, 'create'])->name('reservation.create');
     Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
     Route::post('/annonce/{id}/demander', [DemandeClientController::class, 'store'])->name('demande.store');
 });
 
-// --- 4. ESPACE COMMERCIAL (Table Commercials) ---
-// On utilise le préfixe /commercial pour isoler cet espace
+// --- 4. ESPACE COMMERCIAL ---
 Route::prefix('commercial')->name('commercial.')->group(function () {
-
-    // A. Visiteurs Commerciaux (Non connectés)
+    
+    // Visiteurs non connectés
     Route::middleware('guest:commercial')->group(function () {
         Route::get('/', [CommercialController::class, 'showLogin'])->name('login');
         Route::post('/', [CommercialController::class, 'authenticate'])->name('login.submit');
     });
 
-    // B. Commerciaux Connectés (Authentifiés via guard 'commercial')
+    // Commerciaux connectés
     Route::middleware('auth:commercial')->group(function () {
         Route::get('/dashboard', [CommercialController::class, 'index'])->name('dashboard');
         
-        // --- MESSAGERIE ---
+        // Messagerie (Lecture des messages reçus)
         Route::get('/messagerie', [CommercialController::class, 'messagerie'])->name('messagerie');
-        // Route technique pour marquer comme lu (AJAX) - CELLE QUI MANQUAIT
         Route::post('/message/{id}/lu', [CommercialController::class, 'marquerLu'])->name('message.lu');
 
+        // Envoyer un message (Notification au client)
+        Route::get('/envoyer-message', [CommercialController::class, 'pageEnvoyerMessage'])->name('message.rediger');
+        Route::post('/envoyer-message', [CommercialController::class, 'envoyerMessage'])->name('message.send');
+
+        // Actions générales
         Route::post('/logout', [CommercialController::class, 'logout'])->name('logout');
         Route::post('/valider/{id}', [CommercialController::class, 'valider'])->name('valider');
         Route::post('/refuser/{id}', [CommercialController::class, 'refuser'])->name('refuser');
@@ -111,4 +121,5 @@ Route::middleware(['auth:admin'])->group(function () {
     
     Route::get('/admincommercial', [AdminController::class, 'createCommercial'])->name('admin.commercial.create');
     Route::post('/admincommercial', [AdminController::class, 'storeCommercial'])->name('admin.commercial.store');
+    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');
 });

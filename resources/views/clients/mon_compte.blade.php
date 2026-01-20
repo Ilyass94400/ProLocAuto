@@ -48,10 +48,11 @@
         <div class="dashboard-grid">
             
             <div class="sidebar-menu">
-                <!-- LIEN MIS À JOUR -->
                 <a href="{{ route('clients.dashboard.tableaudebord') }}">Tableau de bord</a>
-                
                 <a href="{{ route('clients.mon-compte') }}">Mes Réservations</a>
+                
+                <!-- AJOUT DU LIEN NOTIFICATION -->
+                <a href="{{ route('clients.notifications') }}">Notifications</a>
             </div>
 
             <div class="main-content">

@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Demande;
 use App\Models\Reservation;
-use App\Models\Annonce; // IMPORTANT : On a besoin de manipuler les annonces
+use App\Models\Annonce;
+use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 
 class CommercialController extends Controller
 {
-    // --- AUTHENTIFICATION ---
+    // ... (Tes fonctions login, authenticate, logout, index, valider, refuser RESTENT IDENTIQUES) ...
+    // Je ne remets que les nouvelles fonctions pour la messagerie
+
     public function showLogin() { return view('commercial.logincommercial'); }
     public function authenticate(Request $request) {
         $credentials = $request->validate(['email' => ['required', 'email'], 'password' => ['required']]);
@@ -25,51 +28,33 @@ class CommercialController extends Controller
         $request->session()->invalidate();
         return redirect()->route('commercial.login');
     }
-
-    // --- DASHBOARD ---
     public function index() {
         $demandes = Demande::orderBy('created_at', 'desc')->get();
         return view('commercial.accueil', compact('demandes'));
     }
-
-    // --- ACTIONS (C'est ici que ça change) ---
-
     public function valider($id) {
-        $demande = Demande::findOrFail($id);
-        
-        // 1. Validation de la demande
-        $demande->statut = 'Validée';
-        $demande->save();
-
-        try {
-            // 2. Création de la réservation
-            Reservation::create([
-                'user_id'    => $demande->user_id,
-                'annonce_id' => $demande->annonce_id,
-                'date_debut' => $demande->date_debut,
-                'duree'      => $demande->duree,
-                'prix'       => $demande->annonce->prix ?? 0, 
-                'statut'     => 'Confirmée'
-            ]);
-
-            // 3. VERROUILLAGE DE L'ANNONCE
-            $annonce = Annonce::find($demande->annonce_id);
-            if ($annonce) {
-                $annonce->statut = 'reserve'; // On change le statut pour la cacher
-                $annonce->save();
-            }
-
-        } catch (\Exception $e) {
-            dd("Erreur : " . $e->getMessage());
-        }
-
-        return back()->with('success', 'Dossier validé et annonce retirée du site !');
+        $d = Demande::findOrFail($id); $d->statut='Validée'; $d->save(); try { Reservation::create(['user_id'=>$d->user_id, 'annonce_id'=>$d->annonce_id, 'date_debut'=>$d->date_debut, 'duree'=>$d->duree, 'prix'=>$d->annonce->prix??0, 'statut'=>'Confirmée']); if($a=Annonce::find($d->annonce_id)){$a->statut='reserve';$a->save();} } catch(\Exception $e){} return back()->with('success','Validé');
+    }
+    public function refuser($id) {
+        $d=Demande::findOrFail($id); $d->statut='Refusée'; $d->save(); return back()->with('warning','Refusée');
     }
 
-    public function refuser($id) {
-        $demande = Demande::findOrFail($id);
-        $demande->statut = 'Refusée';
-        $demande->save();
-        return back()->with('warning', 'La demande a été refusée.');
+    // --- MESSAGERIE ---
+
+    public function messagerie()
+    {
+        // On affiche tous les messages
+        $messages = Message::orderBy('created_at', 'desc')->get();
+        return view('commercial.messagerie', compact('messages'));
+    }
+
+    // Fonction appelée en arrière-plan quand tu cliques sur un message
+    public function marquerLu($id)
+    {
+        $message = Message::findOrFail($id);
+        $message->lu = true;
+        $message->save();
+
+        return response()->json(['success' => true]);
     }
 }

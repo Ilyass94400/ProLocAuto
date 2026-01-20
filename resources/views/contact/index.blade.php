@@ -24,7 +24,7 @@
        
         .contact-container {
             max-width: 900px;
-            margin: 50px auto 50px; /* Marge ajustée */
+            margin: 50px auto 50px;
             padding: 40px;
             background: white;
             border-radius: 8px;
@@ -43,7 +43,7 @@
             color: #6c757d;
         }
 
-        /* --- Bouton Retour Accueil (Ajouté) --- */
+        /* Bouton Retour Accueil */
         .btn-back-home {
             display: inline-block;
             text-decoration: none;
@@ -161,12 +161,10 @@
     </style>
 </head>
 <body>
-    {{-- Pour garder le style cohérent, vous devriez inclure votre navbar ici --}}
-    {{-- @include('layouts.navbar') --}}
 
     <div class="contact-container">
         
-        <!-- NOUVEAU BOUTON RETOUR À L'ACCUEIL -->
+        <!-- BOUTON RETOUR À L'ACCUEIL -->
         <div style="text-align: left;">
             <a href="/" class="btn-back-home">
                 <i class="fas fa-arrow-left"></i> Retour à l'accueil
@@ -230,9 +228,6 @@
             <button type="submit" class="btn-submit">Envoyer le message</button>
         </form>
     </div>
-
-    {{-- N'oubliez pas d'inclure votre footer ici --}}
-    {{-- @include('layouts.footer') --}}
 
 </body>
 </html>

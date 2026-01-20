@@ -24,10 +24,15 @@
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Demandes de réservation</h2>
-        <span class="badge bg-secondary">{{ count($demandes) }} dossiers</span>
+        <div class="d-flex gap-3 align-items-center">
+            <!-- NOUVEAU BOUTON MESSAGERIE -->
+            <a href="{{ route('commercial.messagerie') }}" class="btn btn-primary">
+                📩 Messagerie
+            </a>
+            <span class="badge bg-secondary">{{ count($demandes) }} dossiers</span>
+        </div>
     </div>
     
-    <!-- Messages de notification -->
     @if(session('success')) 
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ session('success') }}
@@ -91,20 +96,13 @@
                             </td>
                             <td class="text-end">
                                 @if($demande->statut == 'En attente')
-                                    <!-- FORMULAIRE POUR VALIDER (C'est ça qui corrige ton erreur GET) -->
                                     <form action="{{ route('commercial.valider', $demande->id) }}" method="POST" class="d-inline">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-success" title="Valider et créer réservation">
-                                            ✅ Valider
-                                        </button>
+                                        <button type="submit" class="btn btn-sm btn-success" title="Valider">✅ Valider</button>
                                     </form>
-
-                                    <!-- FORMULAIRE POUR REFUSER -->
                                     <form action="{{ route('commercial.refuser', $demande->id) }}" method="POST" class="d-inline ms-1">
                                         @csrf
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Refuser le dossier" onclick="return confirm('Êtes-vous sûr de vouloir refuser cette demande ?')">
-                                            ❌
-                                        </button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Refuser" onclick="return confirm('Refuser ?')">❌</button>
                                     </form>
                                 @else
                                     <span class="text-muted small fst-italic">Dossier traité</span>
@@ -115,7 +113,7 @@
                         <tr>
                             <td colspan="7" class="text-center py-5 text-muted">
                                 <div class="fs-4">📭</div>
-                                <div>Aucune demande de réservation en attente.</div>
+                                <div>Aucune demande de réservation.</div>
                             </td>
                         </tr>
                         @endforelse
@@ -128,7 +126,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    
     var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
     var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
       return new bootstrap.Popover(popoverTriggerEl)

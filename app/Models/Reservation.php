@@ -9,22 +9,25 @@ class Reservation extends Model
 {
     use HasFactory;
 
-    // 1. Autorisation des champs (correspond à ta migration)
+    
     protected $fillable = [
         'user_id',
         'annonce_id',
         'date_debut',
+        'duree',
+        'prix',
+        'statut',
     ];
 
-    // 2. Les Relations (Pour naviguer entre les tables)
+    protected $casts = [
+        'date_debut' => 'date',
+    ];
 
-    // Permet de faire : $reservation->user->name
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Permet de faire : $reservation->annonce->titre
     public function annonce()
     {
         return $this->belongsTo(Annonce::class);

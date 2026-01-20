@@ -9,11 +9,13 @@ class Annonce extends Model
 {
     use HasFactory;
 
-    // On autorise Laravel à remplir ces champs
     protected $fillable = [
-        'titre', 
-        'description', 
-        'prix', 
-        'type'
+        'titre',
+        'description',
+        'prix',
+        'type',
+        'statut', 
     ];
+
+    
 }

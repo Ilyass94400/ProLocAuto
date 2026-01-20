@@ -21,7 +21,15 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                
+                // C'est ici que ça se passe :
+                // Si c'est un COMMERCIAL connecté -> On l'envoie vers SON tableau de bord
+                if ($guard === 'commercial') {
+                    return redirect()->route('commercial.dashboard');
+                }
+
+                // Pour tous les autres (Admin ou Client) -> On les envoie vers l'accueil du site
+                return redirect('/');
             }
         }
 

@@ -3,17 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion Commercial</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Connexion Commercial | ProLocAuto</title>
+    
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h2 {
+            color: #333;
+            font-weight: 700;
+        }
+        .login-header p {
+            color: #777;
+        }
+        .btn-custom {
+            background-color: #2c3e50; /* Couleur sombre pro */
+            color: white;
+            font-weight: 600;
+        }
+        .btn-custom:hover {
+            background-color: #1a252f;
+            color: white;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center h-screen">
+<body>
 
-    <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Espace Commercial</h2>
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Espace Pro</h2>
+            <p>Connexion Commercial</p>
+        </div>
 
+        <!-- Affichage des erreurs -->
         @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <ul class="list-disc list-inside">
+            <div class="alert alert-danger">
+                <ul class="mb-0 ps-3 small">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -21,37 +67,27 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('commercial.login.submit') }}">
+        <form action="{{ route('commercial.login.submit') }}" method="POST">
             @csrf
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Email professionnel</label>
+                <input type="email" name="email" class="form-control form-control-lg" placeholder="nom@prolocauto.com" required autofocus>
+            </div>
 
             <div class="mb-4">
-                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
-                <input type="email" name="email" id="email" 
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                       value="{{ old('email') }}" required autofocus>
+                <label class="form-label fw-bold">Mot de passe</label>
+                <input type="password" name="password" class="form-control form-control-lg" required>
             </div>
 
-            <div class="mb-6">
-                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Mot de passe</label>
-                <input type="password" name="password" id="password" 
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" 
-                       required>
-            </div>
-
-            <div class="flex items-center justify-between mb-6">
-                <label class="inline-flex items-center text-sm text-gray-700">
-                    <input type="checkbox" name="remember" class="form-checkbox h-4 w-4 text-blue-600">
-                    <span class="ml-2">Se souvenir de moi</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <button type="submit" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full transition duration-150">
-                    Se connecter
-                </button>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-custom btn-lg">Se connecter</button>
             </div>
         </form>
+
+        <div class="text-center mt-4">
+            <a href="/" class="text-decoration-none text-muted small">&larr; Retour au site</a>
+        </div>
     </div>
 
 </body>

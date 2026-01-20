@@ -28,6 +28,12 @@
             <p class="lead text-muted">Des solutions flexibles pour les travailleurs indépendants (Type 1)</p>
         </div>
 
+        @if(session('success'))
+            <div class="alert alert-success text-center mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="row">
             @forelse($annonces as $annonce)
                 <div class="col-md-4 mb-4">
@@ -37,16 +43,16 @@
                         </div>
                         <div class="card-body d-flex flex-column text-center">
                             <h1 class="card-title pricing-card-title">
-                                {{ $annonce->prix }}€ <small class="text-muted fw-light">/ jour</small>
+                                {{ $annonce->prix }}€ <small class="text-muted fw-light">/ mois</small>
                             </h1>
                             
                             <ul class="list-unstyled mt-3 mb-4 text-start mx-auto">
-                                <li>{{ $annonce->description }}</li>
+                                <li class="text-muted">{{ $annonce->description }}</li>
                             </ul>
                             
                             <div class="mt-auto w-100">
-                                <!-- C'EST ICI LA MODIFICATION -->
-                                <a href="{{ route('contact') }}" class="btn w-100 btn-lg btn-outline-primary">
+                                <!-- BOUTON DE RÉSERVATION -->
+                                <a href="{{ route('client.reservation.form', $annonce->id) }}" class="btn w-100 btn-lg btn-outline-primary">
                                     Réserver cet espace
                                 </a>
                             </div>
@@ -56,9 +62,8 @@
             @empty
                 <div class="col-12 text-center">
                     <div class="alert alert-info text-center py-5">
-                        <h4>Oups ! Aucune offre disponible pour le moment.</h4>
-                        <p>Notre administrateur n'a pas encore publié d'annonces pour cette catégorie.</p>
-                        <a href="{{ route('tarif') }}" class="btn btn-primary mt-3">Voir les autres offres</a>
+                        <h4>Aucune offre disponible.</h4>
+                        <p>L'administrateur n'a pas encore publié d'annonces Type 1.</p>
                     </div>
                 </div>
             @endforelse

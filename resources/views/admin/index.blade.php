@@ -18,23 +18,18 @@
             </form>
         </div>
 
-        <!-- MESSAGES SUCCÈS (pour afficher les confirmations) -->
+        <!-- MESSAGES SUCCÈS -->
         @if(session('success'))
             <div class="alert alert-success mb-4">
                 {{ session('success') }}
             </div>
         @endif
 
-        <!-- BOUTONS D'ACTION -->
+        <!-- BOUTONS D'ACTION (Bouton Réservation retiré) -->
         <div class="mb-4 text-end d-flex gap-2 justify-content-end">
             <!-- Bouton Annonces (Bleu) -->
             <a href="{{ route('admin.annonces.manage') }}" class="btn btn-primary shadow-sm">
                 ✏️ Annonces
-            </a>
-
-            <!-- Bouton Réservation (Vert) -->
-            <a href="{{ route('admin.reservation.page') }}" class="btn btn-success shadow-sm">
-                📅 Réservations
             </a>
 
             <!-- Bouton Commerciaux (Info) -->
@@ -59,13 +54,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- On boucle sur la variable $users envoyée par le contrôleur -->
                         @foreach($users as $user)
                             <tr>
                                 <td>{{ $user->id }}</td>
                                 <td class="fw-bold">{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
-                                <!-- On formate la date pour que ce soit joli (d/m/Y) -->
                                 <td>{{ $user->created_at->format('d/m/Y') }}</td>
                             </tr>
                         @endforeach

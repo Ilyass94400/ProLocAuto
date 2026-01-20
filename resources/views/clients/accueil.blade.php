@@ -209,7 +209,6 @@
         <a href="{{ url('/') }}" class="logo">ProLocAuto</a>
         <div class="navbar-links">
             <a href="{{ url('/') }}">Accueil</a>
-            <a href="{{ route('offers.index') }}">Espaces</a>
             <a href="{{ url('/tarifs') }}">Tarifs</a>
             <a href="{{ url('/contact') }}">Contact</a>
             <a href="{{ url('/avis') }}">Avis</a>

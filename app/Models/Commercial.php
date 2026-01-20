@@ -10,7 +10,7 @@ class Commercial extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    // On précise que ce modèle utilise le guard 'commercial'
+    
     protected $guard = 'commercial';
 
     protected $fillable = [
@@ -20,7 +20,7 @@ class Commercial extends Authenticatable
         'password',
     ];
 
-    // On cache le mot de passe pour qu'il n'apparaisse jamais dans les réponses JSON par erreur
+    
     protected $hidden = [
         'password',
         'remember_token',

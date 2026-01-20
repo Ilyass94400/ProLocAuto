@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
 use App\Models\User;
 use App\Models\Annonce;
-use App\Models\Reservation;
 use App\Models\Commercial;
+// use App\Models\Reservation; // Retiré car plus utilisé ici
 
 class AdminController extends Controller
 {
@@ -66,26 +66,7 @@ class AdminController extends Controller
         return redirect()->route('admin.annonces.manage');
     }
 
-    // --- 4. RÉSERVATION MANUELLE ---
-    public function showManualReservationPage() {
-        $users = User::all();
-        $annonces = Annonce::all();
-        return view('admin.reservation', compact('users', 'annonces'));
-    }
-
-    public function storeManualReservation(Request $request) {
-        $request->validate([
-            'user_id' => 'required',
-            'annonce_id' => 'required',
-            'date_debut' => 'required|date'
-        ]);
-        Reservation::create([
-            'user_id' => $request->user_id,
-            'annonce_id' => $request->annonce_id,
-            'date_debut' => $request->date_debut
-        ]);
-        return redirect()->route('admin.home')->with('success', 'Réservation validée !');
-    }
+    // --- (ANCIENNE SECTION 4. RÉSERVATION MANUELLE RETIRÉE) ---
 
     // --- 5. GESTION DES COMMERCIAUX ---
     public function createCommercial()

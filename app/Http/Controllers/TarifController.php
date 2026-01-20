@@ -3,32 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Models\Admin;
-use App\Models\Annonce; // J'ai ajouté l'import du modèle Annonce
+use App\Models\Annonce; // N'oublie pas l'import
 
 class TarifController extends Controller
 {
     public function index(){
-        // J'ai corrigé l'erreur de syntaxe ici
         return view('tarifs.index');
     }
 
-    // Fonction pour le Type 1
+    // On ajoute ->where('statut', 'disponible') partout
+
     public function showA() {
-        $annonces = Annonce::where('type', 'Type 1')->get();
+        $annonces = Annonce::where('type', 'Type 1')
+                           ->where('statut', 'disponible') // Affiche seulement si dispo
+                           ->get();
         return view('tarifs.offrea', compact('annonces'));
     }
 
-    // Fonction pour le Type 2
     public function showB() {
-        $annonces = Annonce::where('type', 'Type 2')->get();
+        $annonces = Annonce::where('type', 'Type 2')
+                           ->where('statut', 'disponible') // Affiche seulement si dispo
+                           ->get();
         return view('tarifs.offreb', compact('annonces'));
     }
 
-    // Fonction pour le Type 3
     public function showC() {
-        $annonces = Annonce::where('type', 'Type 3')->get();
+        $annonces = Annonce::where('type', 'Type 3')
+                           ->where('statut', 'disponible') // Affiche seulement si dispo
+                           ->get();
         return view('tarifs.offrec', compact('annonces'));
     }
 }

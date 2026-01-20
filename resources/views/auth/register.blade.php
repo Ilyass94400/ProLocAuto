@@ -7,10 +7,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Variables pour la charte graphique ProLocAuto */
+        
         :root {
-            --primary-color: #007BFF; /* Bleu ProLocAuto pour les actions */
-            --secondary-color: #4CAF50; /* Vert pour la validation (optionnel) */
+            --primary-color: #007BFF; 
+            --secondary-color: #4CAF50; 
             --text-color: #333;
             --border-color: #ddd;
             --background-light: #f4f7f6;

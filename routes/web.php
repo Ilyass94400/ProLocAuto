@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-// Imports des contrôleurs
 use App\Http\Controllers\Auth\ClientController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\OfferController;
@@ -15,7 +14,9 @@ use App\Http\Controllers\TarifController;
 use App\Http\Controllers\AvisController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReservationController;
-use App\Http\Controllers\CommercialAuthController;
+use App\Http\Controllers\CommercialController;
+use App\Http\Controllers\DemandeClientController;
+use App\Http\Controllers\DemandeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,11 +24,10 @@ use App\Http\Controllers\CommercialAuthController;
 |--------------------------------------------------------------------------
 */
 
-// --- 1. CLIENTS ---
+// --- 1. AUTHENTIFICATION CLIENTS ---
 Route::get('/login', [ClientController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [ClientController::class, 'login']);
 Route::post('/logout', [ClientController::class, 'logout'])->name('logout');
-
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
@@ -36,7 +36,6 @@ Route::get('/', function () {
     if(Auth::check()){ return redirect()->route('clients.accueil'); } 
     else { return view('prolocauto'); }
 });
-
 Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
 Route::get('/review', [ReviewController::class, 'index'])->name('reviews.index');
 Route::post('/review', [ReviewController::class, 'store'])->name('reviews.store');
@@ -44,6 +43,7 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 Route::resource('avis', AvisController::class)->only(['index', 'store']);
 
+// --- OFFRES ---
 Route::get('/tarifs', [TarifController::class, 'index'])->name('tarif'); 
 Route::get('/offrea', [TarifController::class, 'showA'])->name('offre.a'); 
 Route::get('/offreb', [TarifController::class, 'showB'])->name('offre.b'); 
@@ -54,54 +54,52 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clients/accueil', [ClientAreaController::class, 'index'])->name('clients.accueil');
     Route::get('/clients/mon-compte', [AccountController::class, 'index'])->name('clients.mon-compte');
     
+    // PROFIL --
+
+    Route::get('/clients/dashboard-perso', [AccountController::class, 'dashboard'])->name('clients.dashboard.tableaudebord');
+    
+    // 2. Traiter la modification des infos (Nom, Email ou Mot de passe)
+    Route::put('/clients/profile/update', [AccountController::class, 'updateProfile'])->name('clients.profile.update');
+
+    // Réservation
+    Route::get('/reserver/{id}', [DemandeController::class, 'showForm'])->name('client.reservation.form');
+    Route::post('/reserver/{id}', [DemandeController::class, 'submitForm'])->name('client.reserver.submit');
+    Route::put('/reservation/{id}', [ReservationController::class, 'update'])->name('reservation.update');
+    Route::post('/reservation/{id}/annuler', [ReservationController::class, 'annuler'])->name('reservation.annuler');
+    
+    // Anciennes routes
     Route::get('/reservation/{id}', [ReservationController::class, 'create'])->name('reservation.create');
     Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
+    Route::post('/annonce/{id}/demander', [DemandeClientController::class, 'store'])->name('demande.store');
 });
 
-// --- 4. ESPACE ADMIN (PROTÉGÉ) ---
+// --- 4. ESPACE COMMERCIAL ---
+Route::prefix('commercial')->name('commercial.')->group(function () {
+    Route::middleware('guest:commercial')->group(function () {
+        Route::get('/', [CommercialController::class, 'showLogin'])->name('login');
+        Route::post('/', [CommercialController::class, 'authenticate'])->name('login.submit');
+    });
+    Route::middleware('auth:commercial')->group(function () {
+        Route::get('/dashboard', [CommercialController::class, 'index'])->name('dashboard');
+        Route::post('/logout', [CommercialController::class, 'logout'])->name('logout');
+        Route::post('/valider/{id}', [CommercialController::class, 'valider'])->name('valider');
+        Route::post('/refuser/{id}', [CommercialController::class, 'refuser'])->name('refuser');
+    });
+});
+
+// --- 5. ESPACE ADMIN ---
 Route::get('/admin', [AdminController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin', [AdminController::class, 'authenticate'])->name('admin.auth');
 Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
-
 Route::middleware(['auth:admin'])->group(function () {
-    // Accueil
     Route::get('/accueiladmin', [AdminController::class, 'index'])->name('admin.home');
-
-    // Gestion Annonces (Tout-en-un)
     Route::get('/annonceadmin', [AdminController::class, 'manageAnnonces'])->name('admin.annonces.manage');
     Route::get('/annonceadmin/{id}/edit', [AdminController::class, 'editAnnonceInManager'])->name('admin.annonces.edit_mode');
     Route::post('/admin/annonce', [AdminController::class, 'storeAnnonce'])->name('admin.annonce.store');
     Route::put('/admin/annonce/{id}', [AdminController::class, 'updateAnnonce'])->name('admin.annonce.update');
     Route::delete('/admin/annonce/{id}', [AdminController::class, 'deleteAnnonce'])->name('admin.annonce.delete');
-
-    // --- C'EST ICI QUE TU AVAIS L'ERREUR (IL MANQUAIT CES LIGNES) ---
     Route::get('/reservation', [AdminController::class, 'showManualReservationPage'])->name('admin.reservation.page');
     Route::post('/admin/reservation/store', [AdminController::class, 'storeManualReservation'])->name('admin.reservation.store');
-    // ----------------------------------------------------------------
-});
-
-// --- GESTION DES COMMERCIAUX ---
-    
-    // 1. Afficher la page de création (GET)
     Route::get('/admincommercial', [AdminController::class, 'createCommercial'])->name('admin.commercial.create');
-
-    // 2. Enregistrer le commercial (POST)
     Route::post('/admincommercial', [AdminController::class, 'storeCommercial'])->name('admin.commercial.store');
-
-
-    
-
-Route::prefix('commercial')->name('commercial.')->group(function () {
-    
-    // Pour les commerciaux NON connectés (Guest)
-    Route::middleware('guest:commercial')->group(function () {
-        Route::get('/', [CommercialAuthController::class, 'showLoginForm'])->name('login');
-        Route::post('/login', [CommercialAuthController::class, 'login'])->name('login.submit');
-    });
-
-    // Pour les commerciaux CONNECTÉS (Auth)
-    Route::middleware('auth:commercial')->group(function () {
-        Route::get('/dashboard', [CommercialAuthController::class, 'dashboard'])->name('dashboard');
-        Route::post('/logout', [CommercialAuthController::class, 'logout'])->name('logout');
-    });
 });

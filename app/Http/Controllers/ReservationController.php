@@ -3,41 +3,64 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; // Pour savoir QUI est connecté
-use App\Models\Annonce;
 use App\Models\Reservation;
+use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
 {
-    // 1. AFFICHER LA PAGE DE RÉSERVATION (GET)
-    // On reçoit l'ID de l'annonce que le client veut réserver
-    public function create($id)
-    {
-        // On récupère les infos de l'annonce (Prix, Titre...)
-        $annonce = Annonce::findOrFail($id);
-        
-        // --- C'EST ICI LA CORRECTION ---
-        // On appelle le fichier 'reservation.blade.php' dans le dossier 'reservations'
-        return view('reservations.reservation', compact('annonce'));
-    }
+    // --- ACTIONS CLIENT ---
 
-    // 2. ENREGISTRER LA RÉSERVATION (POST)
-    public function store(Request $request)
+    // 1. MODIFIER LA RÉSERVATION
+    public function update(Request $request, $id)
     {
-        // Validation : On vérifie qu'il y a une date et qu'elle est dans le futur
+        // On récupère la réservation du client connecté
+        $reservation = Reservation::where('id', $id)
+                                  ->where('user_id', Auth::id())
+                                  ->firstOrFail();
+
+        // On empêche de modifier une réservation annulée
+        if($reservation->statut === 'Annulée') {
+            return back()->with('error', 'Cette réservation est annulée et ne peut plus être modifiée.');
+        }
+
+        // Validation des nouvelles données
         $request->validate([
-            'date_debut' => 'required|date|after:today',
-            'annonce_id' => 'required|exists:annonces,id'
+            'date_debut' => 'required|date|after_or_equal:today',
+            'duree' => 'required|string',
         ]);
 
-        // Création de la réservation en base de données
-        Reservation::create([
-            'user_id' => Auth::id(), // L'ID du client connecté automatiquement
-            'annonce_id' => $request->annonce_id,
-            'date_debut' => $request->date_debut
+        // Mise à jour
+        $reservation->update([
+            'date_debut' => $request->date_debut,
+            'duree' => $request->duree,
         ]);
 
-        // On redirige le client vers son espace perso avec un message de succès
-        return redirect()->route('clients.accueil')->with('success', 'Bravo ! Votre réservation est validée.');
+        return back()->with('success', 'Votre réservation a été modifiée avec succès.');
     }
+
+    // 2. ANNULER LA RÉSERVATION
+    public function annuler($id)
+    {
+        $reservation = Reservation::where('id', $id)
+                                  ->where('user_id', Auth::id())
+                                  ->firstOrFail();
+
+        if($reservation->statut === 'Annulée') {
+            return back()->with('error', 'Cette réservation est déjà annulée.');
+        }
+
+        // On change le statut de la réservation
+        $reservation->update(['statut' => 'Annulée']);
+
+        // IMPORTANT : On libère l'annonce pour qu'elle redevienne "disponible" sur le site
+        if($reservation->annonce) {
+            $reservation->annonce->update(['statut' => 'disponible']);
+        }
+
+        return back()->with('success', 'Réservation annulée. L\'espace a été libéré.');
+    }
+
+    // --- (Garde tes anciennes fonctions store/create en dessous si tu en as besoin) ---
+    public function create($id) { /* ... */ }
+    public function store(Request $request) { /* ... */ }
 }

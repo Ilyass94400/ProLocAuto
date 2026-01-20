@@ -53,12 +53,11 @@
             margin-right: 8px;
             font-size: 1.1em;
         }
-        /* --- Fin style du bouton --- */
 
         h1 {
             text-align: center;
             color: var(--primary-color);
-            margin-top: 50px; /* Espace pour le bouton */
+            margin-top: 50px;
             margin-bottom: 5px;
         }
         .average-rating {
@@ -76,6 +75,15 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             margin-bottom: 40px;
             border-left: 5px solid var(--secondary-color);
+        }
+        .login-alert-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+            text-align: center;
+            border-left: 5px solid #ffc107;
         }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
@@ -99,6 +107,7 @@
         .btn-submit:hover {
             background-color: #0056b3;
         }
+        
         /* Style de l'affichage des avis */
         .reviews-list { padding: 0; list-style: none; }
         .review-item {
@@ -142,63 +151,78 @@
             <p class="average-rating">Aucun avis n'a encore été publié.</p>
         @endif
         
-        {{-- FORMULAIRE DE SOUMISSION D'AVIS (sans condition d'Auth) --}}
-        <div class="review-form-container">
-            <h3>Partagez votre expérience ProLocAuto</h3>
-            
-            @if(session('success'))
-                <p style="color: green; font-weight: bold; margin-bottom: 15px;">{{ session('success') }}</p>
-            @endif
-            
-            @if ($errors->any())
-                <div style="color: red; margin-bottom: 15px;">
-                    @foreach ($errors->all() as $error)
-                        <p>{{ $error }}</p>
-                    @endforeach
-                </div>
-            @endif
-
-            <form action="{{ route('avis.store') }}" method="POST">
-                @csrf
+        {{-- BLOC LOGIQUE : AUTHENTIFICATION REQUISE --}}
+        @auth
+            {{-- CAS 1 : UTILISATEUR CONNECTÉ -> AFFICHER LE FORMULAIRE --}}
+            <div class="review-form-container">
+                <h3>Partagez votre expérience ProLocAuto</h3>
                 
-                {{-- Champ Auteur --}}
-                <div class="form-group">
-                    <label for="name">Votre Nom ou Pseudo :</label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" required>
-                </div>
+                @if(session('success'))
+                    <p style="color: green; font-weight: bold; margin-bottom: 15px;">{{ session('success') }}</p>
+                @endif
+                
+                @if ($errors->any())
+                    <div style="color: red; margin-bottom: 15px;">
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
 
-                {{-- Champ Note --}}
-                <div class="form-group">
-                    <label for="rating">Note (1 à 5 étoiles) :</label>
-                    <select name="rating" id="rating" required>
-                        <option value="">-- Sélectionner une note --</option>
-                        @for ($i = 5; $i >= 1; $i--)
-                            <option value="{{ $i }}" {{ old('rating') == $i ? 'selected' : '' }}>
-                                {{ str_repeat('⭐', $i) }}
-                            </option>
-                        @endfor
-                    </select>
-                </div>
+                <form action="{{ route('avis.store') }}" method="POST">
+                    @csrf
+                    
+                    {{-- Champ Auteur (Pré-rempli avec le nom du compte) --}}
+                    <div class="form-group">
+                        <label for="name">Votre Nom ou Pseudo :</label>
+                        <!-- On utilise Auth::user()->name pour faciliter la vie du client -->
+                        <input type="text" name="name" id="name" value="{{ Auth::user()->name }}" required>
+                    </div>
 
-                {{-- Champ Commentaire --}}
-                <div class="form-group">
-                    <label for="comment">Votre commentaire :</label>
-                    <textarea name="comment" id="comment" rows="4" required>{{ old('comment') }}</textarea>
-                </div>
+                    {{-- Champ Note --}}
+                    <div class="form-group">
+                        <label for="rating">Note (1 à 5 étoiles) :</label>
+                        <select name="rating" id="rating" required>
+                            <option value="">-- Sélectionner une note --</option>
+                            @for ($i = 5; $i >= 1; $i--)
+                                <option value="{{ $i }}" {{ old('rating') == $i ? 'selected' : '' }}>
+                                    {{ str_repeat('⭐', $i) }}
+                                </option>
+                            @endfor
+                        </select>
+                    </div>
 
-                <button type="submit" class="btn-submit">
-                    Soumettre mon avis
-                </button>
-            </form>
-        </div>
+                    {{-- Champ Commentaire --}}
+                    <div class="form-group">
+                        <label for="comment">Votre commentaire :</label>
+                        <textarea name="comment" id="comment" rows="4" required>{{ old('comment') }}</textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        Soumettre mon avis
+                    </button>
+                </form>
+            </div>
+        @else
+            {{-- CAS 2 : UTILISATEUR NON CONNECTÉ -> AFFICHER BOUTON LOGIN --}}
+            <div class="login-alert-container">
+                <h3 style="color: #856404;">Vous souhaitez donner votre avis ?</h3>
+                <p style="margin: 20px 0; color: #666;">
+                    Pour garantir la fiabilité de notre communauté, seuls les membres inscrits peuvent publier des commentaires.
+                </p>
+                <a href="{{ route('login') }}" class="btn-submit" style="text-decoration: none; display: inline-block;">
+                    <i class="fas fa-sign-in-alt"></i> Se connecter pour poster
+                </a>
+            </div>
+        @endauth
         
-        {{-- LISTE DES AVIS EXISTANTS --}}
+        {{-- LISTE DES AVIS EXISTANTS (Visible par tout le monde) --}}
         <h2 style="margin-top: 50px;">Toutes les évaluations ({{ $avis->count() }})</h2>
         <ul class="reviews-list">
             @forelse ($avis as $serviceAvis)
                 <li class="review-item">
                     <div class="review-header">
-                        <p>{{ $serviceAvis->auteur_nom ?? 'Anonyme' }}</p>
+                        <p><strong>{{ $serviceAvis->auteur_nom ?? 'Anonyme' }}</strong></p>
                         <div class="rating-stars">
                             @for ($i = 0; $i < 5; $i++)
                                 <span style="color: {{ $i < $serviceAvis->note ? 'var(--star-color)' : '#ccc' }};">★</span>

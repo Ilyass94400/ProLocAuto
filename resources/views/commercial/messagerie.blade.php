@@ -33,13 +33,15 @@
     </nav>
 
     <div class="container">
+        <!-- Messages Flash -->
+        @if(session('success')) <div class="alert alert-success alert-dismissible fade show">{{ session('success') }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> @endif
+        @if(session('error')) <div class="alert alert-warning alert-dismissible fade show">{{ session('error') }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div> @endif
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1><i class="fas fa-inbox text-primary"></i> Boîte de réception</h1>
-            
             <div class="d-flex gap-3 align-items-center">
-                <!-- LE NOUVEAU BOUTON -->
                 <a href="{{ route('commercial.message.rediger') }}" class="btn btn-success text-white">
-                    <i class="fas fa-paper-plane"></i> Envoyer un message
+                    <i class="fas fa-paper-plane"></i> Nouveau message
                 </a>
                 <span class="badge bg-primary">{{ count($messages) }} messages</span>
             </div>
@@ -76,6 +78,7 @@
                                     <td class="text-end small">{{ $message->created_at->format('d/m/Y H:i') }}</td>
                                 </tr>
 
+                                <!-- MODAL DE LECTURE & RÉPONSE -->
                                 <div class="modal fade" id="msgModal-{{ $message->id }}" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
@@ -84,15 +87,45 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body">
+                                                <!-- Info message reçu -->
                                                 <div class="mb-3 border-bottom pb-2">
                                                     <strong>De :</strong> {{ $message->name }} &lt;{{ $message->email }}&gt;<br>
                                                     <strong>Date :</strong> {{ $message->created_at->format('d/m/Y à H:i') }}
                                                 </div>
-                                                <div class="p-3 bg-light rounded" style="white-space: pre-wrap;">{{ $message->message }}</div>
+                                                <div class="p-3 bg-light rounded mb-4" style="white-space: pre-wrap;">{{ $message->message }}</div>
+
+                                                <!-- FORMULAIRE DE RÉPONSE INTERNE -->
+                                                @php
+                                                    // On vérifie directement dans la vue si le client existe (simple et efficace)
+                                                    $clientExists = App\Models\User::where('email', $message->email)->exists();
+                                                @endphp
+
+                                                @if($clientExists)
+                                                    <div class="card card-body border-primary">
+                                                        <h6 class="text-primary"><i class="fas fa-reply"></i> Répondre au client (Notification interne)</h6>
+                                                        <form action="{{ route('commercial.message.reply', $message->id) }}" method="POST">
+                                                            @csrf
+                                                            <div class="mb-2">
+                                                                <textarea name="response_message" class="form-control" rows="3" placeholder="Votre réponse..." required></textarea>
+                                                            </div>
+                                                            <div class="text-end">
+                                                                <button type="submit" class="btn btn-primary btn-sm">Envoyer la réponse</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                @else
+                                                    <div class="alert alert-warning small">
+                                                        <i class="fas fa-exclamation-circle"></i> Ce correspondant n'a pas de compte client associé à cet email ({{ $message->email }}). 
+                                                        Vous ne pouvez pas lui répondre via le système interne.
+                                                    </div>
+                                                @endif
                                             </div>
                                             <div class="modal-footer">
-                                                <a href="mailto:{{ $message->email }}?subject=RE: {{ $message->subject }}" class="btn btn-primary">Répondre</a>
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                <!-- Fallback : Réponse par mail classique -->
+                                                <a href="mailto:{{ $message->email }}?subject=RE: {{ $message->subject }}" class="btn btn-outline-secondary btn-sm">
+                                                    <i class="fas fa-envelope"></i> Répondre par mail (Outlook/Gmail)
+                                                </a>
+                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
                                             </div>
                                         </div>
                                     </div>

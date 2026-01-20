@@ -73,6 +73,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            position: relative; /* Pour positionner le bouton retour */
         }
         .form-side header h2 {
             font-size: 1.8em;
@@ -170,6 +171,25 @@
             background-color: #0056b3;
         }
 
+        /* Bouton Retour Accueil (NOUVEAU) */
+        .btn-back-home {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-decoration: none;
+            color: #6c757d;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s;
+        }
+        .btn-back-home:hover {
+            color: var(--primary-color);
+        }
+        .btn-back-home i {
+            margin-right: 5px;
+        }
+
         /* Note de Sécurité */
         .security-note {
             text-align: center;
@@ -200,6 +220,10 @@
             .form-side {
                 padding: 30px 20px;
             }
+            .btn-back-home {
+                top: 10px;
+                right: 15px;
+            }
         }
     </style>
 </head>
@@ -213,6 +237,12 @@
     </div>
 
     <div class="form-side">
+        
+        <!-- AJOUT DU BOUTON RETOUR -->
+        <a href="/" class="btn-back-home">
+            <i class="fas fa-arrow-left"></i> Retour à l'accueil
+        </a>
+
         <header>
             <h2>Créez votre compte ProLocAuto</h2>
             <p>Déjà membre ? <a href="{{ route('login') }}">Connectez-vous ici</a></p>

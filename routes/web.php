@@ -55,21 +55,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clients/mon-compte', [AccountController::class, 'index'])->name('clients.mon-compte');
     Route::get('/clients/dashboard-perso', [AccountController::class, 'dashboard'])->name('clients.dashboard.tableaudebord');
     
-    // Notifications (Récupérées depuis la BDD via AccountController)
+    // Notifications
     Route::get('/clients/notification', [AccountController::class, 'notifications'])->name('clients.notifications');
+    Route::post('/clients/notification/reply', [AccountController::class, 'reply'])->name('clients.notification.reply');
+    
+    // --- NOUVELLE ROUTE : MARQUER COMME VU ---
+    Route::post('/clients/notification/{id}/read', [AccountController::class, 'markAsRead'])->name('clients.notification.read');
 
     // Profil
     Route::put('/clients/profile/update', [AccountController::class, 'updateProfile'])->name('clients.profile.update');
 
-    // Réservation (Processus Client)
+    // Réservation
     Route::get('/reserver/{id}', [DemandeController::class, 'showForm'])->name('client.reservation.form');
     Route::post('/reserver/{id}', [DemandeController::class, 'submitForm'])->name('client.reserver.submit');
-    
-    // Actions sur les réservations (Modifier / Annuler)
     Route::put('/reservation/{id}', [ReservationController::class, 'update'])->name('reservation.update');
     Route::post('/reservation/{id}/annuler', [ReservationController::class, 'annuler'])->name('reservation.annuler');
     
-    // Anciennes routes (Legacy)
+    // Anciennes routes
     Route::get('/reservation/{id}', [ReservationController::class, 'create'])->name('reservation.create');
     Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
     Route::post('/annonce/{id}/demander', [DemandeClientController::class, 'store'])->name('demande.store');
@@ -77,26 +79,23 @@ Route::middleware(['auth'])->group(function () {
 
 // --- 4. ESPACE COMMERCIAL ---
 Route::prefix('commercial')->name('commercial.')->group(function () {
-    
-    // Visiteurs non connectés
     Route::middleware('guest:commercial')->group(function () {
         Route::get('/', [CommercialController::class, 'showLogin'])->name('login');
         Route::post('/', [CommercialController::class, 'authenticate'])->name('login.submit');
     });
 
-    // Commerciaux connectés
     Route::middleware('auth:commercial')->group(function () {
         Route::get('/dashboard', [CommercialController::class, 'index'])->name('dashboard');
         
-        // Messagerie (Lecture des messages reçus)
+        // Messagerie
         Route::get('/messagerie', [CommercialController::class, 'messagerie'])->name('messagerie');
         Route::post('/message/{id}/lu', [CommercialController::class, 'marquerLu'])->name('message.lu');
+        Route::post('/message/{id}/reply', [CommercialController::class, 'replyToMessage'])->name('message.reply');
 
-        // Envoyer un message (Notification au client)
+        // Envoi message
         Route::get('/envoyer-message', [CommercialController::class, 'pageEnvoyerMessage'])->name('message.rediger');
         Route::post('/envoyer-message', [CommercialController::class, 'envoyerMessage'])->name('message.send');
 
-        // Actions générales
         Route::post('/logout', [CommercialController::class, 'logout'])->name('logout');
         Route::post('/valider/{id}', [CommercialController::class, 'valider'])->name('valider');
         Route::post('/refuser/{id}', [CommercialController::class, 'refuser'])->name('refuser');
@@ -115,10 +114,8 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admin/annonce', [AdminController::class, 'storeAnnonce'])->name('admin.annonce.store');
     Route::put('/admin/annonce/{id}', [AdminController::class, 'updateAnnonce'])->name('admin.annonce.update');
     Route::delete('/admin/annonce/{id}', [AdminController::class, 'deleteAnnonce'])->name('admin.annonce.delete');
-    
     Route::get('/reservation', [AdminController::class, 'showManualReservationPage'])->name('admin.reservation.page');
     Route::post('/admin/reservation/store', [AdminController::class, 'storeManualReservation'])->name('admin.reservation.store');
-    
     Route::get('/admincommercial', [AdminController::class, 'createCommercial'])->name('admin.commercial.create');
     Route::post('/admincommercial', [AdminController::class, 'storeCommercial'])->name('admin.commercial.store');
     Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');

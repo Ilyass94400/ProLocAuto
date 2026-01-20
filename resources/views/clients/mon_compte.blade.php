@@ -16,7 +16,19 @@
         .account-container { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
         .dashboard-grid { display: grid; grid-template-columns: 1fr 3fr; gap: 30px; }
         .sidebar-menu { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .sidebar-menu a { display: block; padding: 10px 0; text-decoration: none; color: #555; border-bottom: 1px solid #eee; }
+        /* Modification pour permettre l'alignement flex du badge */
+        .sidebar-menu a { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px 0; 
+            text-decoration: none; 
+            color: #555; 
+            border-bottom: 1px solid #eee; 
+        }
+        .sidebar-menu a:hover { color: var(--primary-color); }
+        .sidebar-menu a:last-child { border-bottom: none; }
+        
         .main-content { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .info-card { background-color: #f1f8ff; padding: 20px; border-radius: 6px; margin-bottom: 20px; border-left: 5px solid var(--primary-color); }
         .reservation-item { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
@@ -51,8 +63,13 @@
                 <a href="{{ route('clients.dashboard.tableaudebord') }}">Tableau de bord</a>
                 <a href="{{ route('clients.mon-compte') }}">Mes Réservations</a>
                 
-                <!-- AJOUT DU LIEN NOTIFICATION -->
-                <a href="{{ route('clients.notifications') }}">Notifications</a>
+                <!-- LIEN NOTIFICATION AVEC BADGE -->
+                <a href="{{ route('clients.notifications') }}">
+                    Notifications
+                    @if(isset($unreadCount) && $unreadCount > 0)
+                        <span class="badge bg-danger rounded-pill">{{ $unreadCount }}</span>
+                    @endif
+                </a>
             </div>
 
             <div class="main-content">
@@ -95,6 +112,7 @@
                             @endif
                         </div>
 
+                        <!-- MODAL DE MODIFICATION -->
                         <div class="modal fade" id="editModal-{{ $reservation->id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">

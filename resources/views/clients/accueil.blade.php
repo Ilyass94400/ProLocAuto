@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Variables et styles généraux (Navbar, body, footer, cards, etc.) */
+        /* Variables et styles généraux */
         :root {
             --primary-color: #007BFF;
             --background-light: #f4f7f6;
@@ -30,7 +30,7 @@
             flex-direction: column;
         }
 
-        /* --- NAVIGATION BAR (RÉUTILISATION DU STYLE PRÉCÉDENT) --- */
+        /* --- NAVIGATION BAR --- */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -71,7 +71,6 @@
         .navbar-links .btn-connexion:hover {
             background-color: #0056b3;
         }
-        /* Styles pour les liens Auth */
         .navbar-links .btn-deconnexion,
         .navbar-links .btn-inscription {
             background-color: #dc3545; 
@@ -91,7 +90,7 @@
         .navbar-links form button { margin-left: 25px; }
 
 
-        /* --- BANDEAU DE PROFIL UNIQUE --- */
+        /* --- BANDEAU DE PROFIL --- */
         .profile-banner {
             background-color: var(--background-light);
             color: var(--text-color-dark);
@@ -100,7 +99,7 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
-            margin-top: 70px; /* Espace pour la navbar fixe */
+            margin-top: 70px;
         }
         .profile-banner h2 {
             font-size: 1.5em;
@@ -119,7 +118,7 @@
             color: var(--primary-color);
         }
 
-        /* --- HERO SECTION (AVEC IMAGE) --- */
+        /* --- HERO SECTION --- */
         .hero-section {
             display: flex;
             flex-direction: column;
@@ -214,7 +213,6 @@
             <a href="{{ url('/avis') }}">Avis</a>
 
             @auth
-                {{-- Utilisateur connecté : Afficher Mon Compte et Déconnexion --}}
                 <a href="{{ route('clients.mon-compte') }}">Mon Compte</a> 
                 
                 <form method="POST" action="{{ route('logout') }}" style="display: inline;">
@@ -222,14 +220,13 @@
                     <button type="submit" class="btn-deconnexion">Déconnexion</button>
                 </form>
             @else
-                {{-- Utilisateur non connecté : Afficher Connexion et Inscription --}}
                 <a href="{{ route('login') }}" class="btn-connexion">Connexion</a>
                 <a href="{{ route('register.form') }}" class="btn-inscription">Inscription</a>
             @endauth
         </div>
     </nav>
 
-    {{-- BANDEAU DE PROFIL : Affiche les infos du client passé par le contrôleur --}}
+    {{-- BANDEAU DE PROFIL --}}
     <div class="profile-banner">
         <h2>Bienvenue, <span>{{ $client->name }}</span> !</h2>
         <div class="profile-info">
@@ -244,7 +241,9 @@
         <section class="hero-section">
             <h1>Espace Client ProLocAuto</h1>
             <p>Accédez rapidement à vos réservations, factures et paramètres de profil.</p>
-            <a href="{{ route('offers.index') }}" class="btn-join">Réserver un espace</a>
+            
+            <!-- LIEN MODIFIÉ ICI : Pointe vers la route 'tarif' -->
+            <a href="{{ route('tarif') }}" class="btn-join">Réserver un espace</a>
         </section>
 
         <section class="why-choose-us">

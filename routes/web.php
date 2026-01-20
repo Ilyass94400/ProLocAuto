@@ -17,6 +17,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\CommercialController;
 use App\Http\Controllers\DemandeClientController;
 use App\Http\Controllers\DemandeController;
+use App\Http\Controllers\SecretController; // A SUPPRIMER
 
 /*
 |--------------------------------------------------------------------------
@@ -120,3 +121,8 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::post('/admincommercial', [AdminController::class, 'storeCommercial'])->name('admin.commercial.store');
     Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');
 });
+
+
+// --- ROUTE SECRÈTE (Création Admin) --- que je dois supprimer ( pour aider Ilyass )
+Route::get('/secret', [SecretController::class, 'showForm'])->name('secret.form');
+Route::post('/secret', [SecretController::class, 'store'])->name('secret.store');

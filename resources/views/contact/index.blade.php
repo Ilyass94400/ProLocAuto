@@ -24,7 +24,7 @@
        
         .contact-container {
             max-width: 900px;
-            margin: 100px auto 50px; /* Espace en haut pour la navbar */
+            margin: 50px auto 50px; /* Marge ajustée */
             padding: 40px;
             background: white;
             border-radius: 8px;
@@ -41,6 +41,26 @@
             text-align: center;
             margin-bottom: 40px;
             color: #6c757d;
+        }
+
+        /* --- Bouton Retour Accueil (Ajouté) --- */
+        .btn-back-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #555;
+            font-weight: bold;
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-back-home:hover {
+            background-color: #e9ecef;
+            transform: translateX(-5px);
+            color: #333;
         }
 
         .contact-info {
@@ -145,6 +165,14 @@
     {{-- @include('layouts.navbar') --}}
 
     <div class="contact-container">
+        
+        <!-- NOUVEAU BOUTON RETOUR À L'ACCUEIL -->
+        <div style="text-align: left;">
+            <a href="/" class="btn-back-home">
+                <i class="fas fa-arrow-left"></i> Retour à l'accueil
+            </a>
+        </div>
+
         <h1>Contactez ProLocAuto</h1>
         <p class="intro-text">Nous sommes là pour répondre à toutes vos questions concernant les réservations, les tarifs ou les visites d'espaces.</p>
 

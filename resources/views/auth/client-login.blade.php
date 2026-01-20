@@ -52,10 +52,10 @@
     <div class="row justify-content-center">
         <div class="col-md-5">
             
-            <!-- Lien retour accueil -->
+            <!-- Lien retour accueil (Je le laisse aussi en haut, c'est discret) -->
             <div class="text-center mb-4">
                 <a href="/" class="text-decoration-none text-secondary fw-bold">
-                    &larr; Retour à l'accueil ProLocAuto
+                    &larr; ProLocAuto
                 </a>
             </div>
 
@@ -67,7 +67,6 @@
 
                 <div class="card-body p-4">
                     
-                    <!-- Affichage des erreurs de validation (ex: mot de passe faux) -->
                     @if ($errors->any())
                         <div class="alert alert-danger">
                             <ul class="mb-0 small">
@@ -78,18 +77,15 @@
                         </div>
                     @endif
 
-                    <!-- Message de statut (ex: "Vous êtes déconnecté") -->
                     @if (session('status'))
                         <div class="alert alert-success small">
                             {{ session('status') }}
                         </div>
                     @endif
 
-                    <!-- LE FORMULAIRE CORRIGÉ -->
                     <form method="POST" action="{{ route('login') }}">
-                        @csrf <!-- Sécurité obligatoire -->
+                        @csrf 
 
-                        <!-- Champ Email -->
                         <div class="mb-3">
                             <label for="email" class="form-label text-muted small fw-bold">ADRESSE EMAIL</label>
                             <input type="email" 
@@ -102,11 +98,9 @@
                                    autofocus>
                         </div>
 
-                        <!-- Champ Mot de passe -->
                         <div class="mb-4">
                             <div class="d-flex justify-content-between">
                                 <label for="password" class="form-label text-muted small fw-bold">MOT DE PASSE</label>
-                                <!-- Lien mot de passe oublié (optionnel) -->
                                 @if (Route::has('password.request'))
                                     <a href="{{ route('password.request') }}" class="text-decoration-none small">Oublié ?</a>
                                 @endif
@@ -119,23 +113,26 @@
                                    required>
                         </div>
 
-                        <!-- Case "Se souvenir de moi" -->
                         <div class="mb-4 form-check">
                             <input type="checkbox" class="form-check-input" name="remember" id="remember_me">
                             <label class="form-check-label small text-secondary" for="remember_me">Se souvenir de moi</label>
                         </div>
 
-                        <!-- Bouton de validation -->
-                        <div class="d-grid">
+                        <!-- ZONE DES BOUTONS (Avec le nouveau bouton Accueil) -->
+                        <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-login text-white">
                                 Se connecter
                             </button>
+                            
+                            <!-- NOUVEAU BOUTON RETOUR À L'ACCUEIL -->
+                            <a href="/" class="btn btn-outline-secondary">
+                                Retour à l'accueil
+                            </a>
                         </div>
 
                     </form>
                 </div>
 
-                <!-- Pied de carte : Lien vers inscription -->
                 <div class="card-footer bg-light text-center py-3">
                     <p class="mb-0 small text-muted">
                         Pas encore de compte ? 

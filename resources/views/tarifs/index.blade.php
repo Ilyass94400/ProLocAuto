@@ -25,9 +25,10 @@
         /* --- Contenu de la Page de Tarifs --- */
         .pricing-page-container {
             max-width: 1200px;
-            margin: 100px auto 50px; /* Espace en haut pour la navbar */
+            margin: 50px auto 50px; /* Réduit un peu la marge du haut pour le bouton */
             padding: 40px 20px;
             text-align: center;
+            position: relative; /* Pour positionner des éléments si besoin */
         }
         h1 {
             color: var(--primary-color);
@@ -38,6 +39,26 @@
             font-size: 1.1em;
             color: #6c757d;
             margin-bottom: 50px;
+        }
+
+        /* --- Bouton Retour Accueil --- */
+        .btn-back-home {
+            display: inline-block;
+            text-decoration: none;
+            color: #555;
+            font-weight: bold;
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            border-radius: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .btn-back-home:hover {
+            background-color: #e9ecef;
+            transform: translateX(-5px);
+            color: #333;
         }
 
         /* --- Cartes de Tarifs --- */
@@ -138,6 +159,14 @@
     {{-- @include('layouts.navbar') --}}
 
     <div class="pricing-page-container">
+        
+        <!-- NOUVEAU BOUTON RETOUR À L'ACCUEIL -->
+        <div style="text-align: left;">
+            <a href="/" class="btn-back-home">
+                <i class="fas fa-arrow-left"></i> Retour à l'accueil
+            </a>
+        </div>
+
         <h1>Nos Plans de Coworking Flexibles</h1>
         <p class="intro-text">Choisissez le plan ProLocAuto qui correspond le mieux à votre rythme de travail et vos besoins en communauté.</p>
 
@@ -219,4 +248,3 @@
     
 </body>
 </html>
-

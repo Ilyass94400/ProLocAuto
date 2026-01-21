@@ -25,12 +25,12 @@
 
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input type="email" name="mail" class="form-control" placeholder="sami@admin.com" required>
+                <input type="email" name="mail" class="form-control" placeholder="exemple@admin.com" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Mot de passe</label>
-                <input type="password" name="motdepasse" class="form-control" placeholder="azerty" required>
+                <input type="password" name="motdepasse" class="form-control" placeholder="mot de passe" required>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Se connecter</button>

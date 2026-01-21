@@ -4,242 +4,233 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avis Clients | ProLocAuto</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #007BFF;
-            --secondary-color: #17a2b8;
-            --background-light: #f8f9fa;
-            --text-color-dark: #333;
+            --primary: #0d6efd;
+            --secondary: #6c757d;
+            --bg-light: #f8f9fa;
             --star-color: #ffc107;
         }
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background-light);
-            color: var(--text-color-dark);
-        }
-        .page-container {
-            max-width: 900px;
-            margin: 50px auto 50px; 
-            padding: 40px 20px;
-            position: relative;
-        }
         
-        /* --- Style du bouton de retour --- */
-        .back-to-home {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            text-align: left;
-        }
-        .btn-home {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            transition: background-color 0.3s ease;
-        }
-        .btn-home:hover {
-            background-color: #138496;
-        }
-        .btn-home i {
-            margin-right: 8px;
-            font-size: 1.1em;
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
         }
 
-        h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-top: 50px;
-            margin-bottom: 5px;
-        }
-        .average-rating {
-            text-align: center;
-            font-size: 1.5em;
-            color: var(--text-color-dark);
-            margin-bottom: 40px;
-        }
-        
-        /* Style du formulaire */
-        .review-form-container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            margin-bottom: 40px;
-            border-left: 5px solid var(--secondary-color);
-        }
-        .login-alert-container {
-            background: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            margin-bottom: 40px;
-            text-align: center;
-            border-left: 5px solid #ffc107;
-        }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
-        .form-group input[type="text"], .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .btn-submit {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-        .btn-submit:hover {
-            background-color: #0056b3;
-        }
-        
-        /* Style de l'affichage des avis */
-        .reviews-list { padding: 0; list-style: none; }
-        .review-item {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-        }
-        .review-header {
-            display: flex;
-            justify-content: space-between;
+        /* En-tête avec stats */
+        .stats-badge {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: inline-flex;
             align-items: center;
-            margin-bottom: 10px;
+            gap: 20px;
         }
-        .rating-stars span { color: var(--star-color); }
-        .review-item p.comment { font-style: italic; color: #555; line-height: 1.5; }
-        .review-item small { color: #999; display: block; text-align: right; margin-top: 10px; }
+
+        /* Formulaire Sticky (reste visible quand on scroll) */
+        .sticky-form {
+            position: sticky;
+            top: 40px; /* Marge du haut */
+            z-index: 10;
+        }
+
+        /* Cartes Avis */
+        .review-card {
+            background: white;
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            transition: transform 0.2s;
+        }
+        .review-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        /* Avatar coloré aléatoire (simulation) */
+        .avatar-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        /* Bouton Retour */
+        .btn-back {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        .btn-back:hover {
+            background: var(--primary);
+            color: white;
+        }
     </style>
 </head>
 <body>
-    
-    <div class="page-container">
+
+    <!-- Bouton Retour -->
+    <a href="{{ route('clients.accueil') }}" class="btn-back">
+        <i class="fas fa-arrow-left me-2"></i> Accueil
+    </a>
+
+    <div class="container py-5 mt-4">
         
-        {{-- BOUTON DE REDIRECTION VERS L'ACCUEIL --}}
-        <div class="back-to-home">
-            <a href="{{ route('clients.accueil') }}" class="btn-home">
-                <i class="fas fa-arrow-left"></i> ProLocAuto
-            </a>
+        <!-- SECTION EN-TÊTE -->
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-primary mb-3">L'avis de notre communauté</h1>
+            <p class="lead text-muted mb-4">Découvrez les expériences de nos coworkers.</p>
+            
+            <div class="stats-badge">
+                <div class="display-4 fw-bold text-dark lh-1">
+                    {{ number_format($noteMoyenne, 1) }}
+                </div>
+                <div class="text-start">
+                    <div class="text-warning fs-5">
+                        @for($i = 1; $i <= 5; $i++)
+                            <i class="{{ $i <= round($noteMoyenne) ? 'fas' : 'far' }} fa-star"></i>
+                        @endfor
+                    </div>
+                    <div class="text-muted small">{{ $avis->count() }} avis vérifiés</div>
+                </div>
+            </div>
         </div>
-        
-        <h1>Avis de notre Communauté</h1>
 
-        @if($avis->isNotEmpty())
-            <p class="average-rating">
-                Note Moyenne : 
-                <span>{{ number_format($noteMoyenne, 1) }}/5</span> 
-                (sur {{ $avis->count() }} avis)
-            </p>
-        @else
-            <p class="average-rating">Aucun avis n'a encore été publié.</p>
-        @endif
-        
-        {{-- BLOC LOGIQUE : AUTHENTIFICATION REQUISE --}}
-        @auth
-            {{-- CAS 1 : UTILISATEUR CONNECTÉ -> AFFICHER LE FORMULAIRE --}}
-            <div class="review-form-container">
-                <h3>Partagez votre expérience ProLocAuto</h3>
-                
-                @if(session('success'))
-                    <p style="color: green; font-weight: bold; margin-bottom: 15px;">{{ session('success') }}</p>
-                @endif
-                
-                @if ($errors->any())
-                    <div style="color: red; margin-bottom: 15px;">
-                        @foreach ($errors->all() as $error)
-                            <p>{{ $error }}</p>
-                        @endforeach
+        <div class="row g-5">
+            
+            <!-- COLONNE GAUCHE : FORMULAIRE -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm sticky-form">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3">Partagez votre avis</h4>
+                        <p class="text-muted small mb-4">Votre retour nous aide à améliorer nos espaces.</p>
+
+                        <!-- Messages Flash -->
+                        @if(session('success'))
+                            <div class="alert alert-success py-2 small">
+                                <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger py-2 small">
+                                <ul class="mb-0 ps-3">
+                                    @foreach ($errors->all() as $error) <li>{{ $error }}</li> @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <!-- Logique Auth -->
+                        @auth
+                            <form action="{{ route('avis.store') }}" method="POST">
+                                @csrf
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Votre nom</label>
+                                    <input type="text" name="name" class="form-control bg-light" value="{{ Auth::user()->name }}" readonly>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Note</label>
+                                    <select name="rating" class="form-select" required>
+                                        <option value="" disabled selected>Choisir...</option>
+                                        <option value="5">⭐⭐⭐⭐⭐ Excellent (5)</option>
+                                        <option value="4">⭐⭐⭐⭐ Très bien (4)</option>
+                                        <option value="3">⭐⭐⭐ Bien (3)</option>
+                                        <option value="2">⭐⭐ Moyen (2)</option>
+                                        <option value="1">⭐ Déçu (1)</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-uppercase text-muted">Commentaire</label>
+                                    <textarea name="comment" class="form-control" rows="4" placeholder="Votre expérience..." required>{{ old('comment') }}</textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Publier</button>
+                            </form>
+                        @else
+                            <div class="text-center py-4 bg-light rounded">
+                                <i class="fas fa-lock text-warning fs-1 mb-3"></i>
+                                <h6 class="fw-bold">Connexion requise</h6>
+                                <p class="text-muted small px-3">Connectez-vous pour laisser un avis authentique.</p>
+                                <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm">Se connecter</a>
+                            </div>
+                        @endauth
                     </div>
-                @endif
-
-                <form action="{{ route('avis.store') }}" method="POST">
-                    @csrf
-                    
-                    {{-- Champ Auteur (Pré-rempli avec le nom du compte) --}}
-                    <div class="form-group">
-                        <label for="name">Votre Nom ou Pseudo :</label>
-                        <!-- On utilise Auth::user()->name pour faciliter la vie du client -->
-                        <input type="text" name="name" id="name" value="{{ Auth::user()->name }}" required>
-                    </div>
-
-                    {{-- Champ Note --}}
-                    <div class="form-group">
-                        <label for="rating">Note (1 à 5 étoiles) :</label>
-                        <select name="rating" id="rating" required>
-                            <option value="">-- Sélectionner une note --</option>
-                            @for ($i = 5; $i >= 1; $i--)
-                                <option value="{{ $i }}" {{ old('rating') == $i ? 'selected' : '' }}>
-                                    {{ str_repeat('⭐', $i) }}
-                                </option>
-                            @endfor
-                        </select>
-                    </div>
-
-                    {{-- Champ Commentaire --}}
-                    <div class="form-group">
-                        <label for="comment">Votre commentaire :</label>
-                        <textarea name="comment" id="comment" rows="4" required>{{ old('comment') }}</textarea>
-                    </div>
-
-                    <button type="submit" class="btn-submit">
-                        Soumettre mon avis
-                    </button>
-                </form>
+                </div>
             </div>
-        @else
-            {{-- CAS 2 : UTILISATEUR NON CONNECTÉ -> AFFICHER BOUTON LOGIN --}}
-            <div class="login-alert-container">
-                <h3 style="color: #856404;">Vous souhaitez donner votre avis ?</h3>
-                <p style="margin: 20px 0; color: #666;">
-                    Pour garantir la fiabilité de notre communauté, seuls les membres inscrits peuvent publier des commentaires.
-                </p>
-                <a href="{{ route('login') }}" class="btn-submit" style="text-decoration: none; display: inline-block;">
-                    <i class="fas fa-sign-in-alt"></i> Se connecter pour poster
-                </a>
-            </div>
-        @endauth
-        
-        {{-- LISTE DES AVIS EXISTANTS (Visible par tout le monde) --}}
-        <h2 style="margin-top: 50px;">Toutes les évaluations ({{ $avis->count() }})</h2>
-        <ul class="reviews-list">
-            @forelse ($avis as $serviceAvis)
-                <li class="review-item">
-                    <div class="review-header">
-                        <p><strong>{{ $serviceAvis->auteur_nom ?? 'Anonyme' }}</strong></p>
-                        <div class="rating-stars">
-                            @for ($i = 0; $i < 5; $i++)
-                                <span style="color: {{ $i < $serviceAvis->note ? 'var(--star-color)' : '#ccc' }};">★</span>
-                            @endfor
+
+            <!-- COLONNE DROITE : LISTE DES AVIS -->
+            <div class="col-lg-8">
+                <h5 class="fw-bold mb-4 pb-2 border-bottom">Derniers avis publiés</h5>
+
+                <div class="d-flex flex-column gap-3">
+                    @forelse ($avis as $index => $serviceAvis)
+                        <div class="review-card">
+                            <div class="d-flex">
+                                <!-- Avatar avec couleur dynamique basée sur l'index -->
+                                <div class="flex-shrink-0 me-3">
+                                    @php
+                                        $colors = ['#0d6efd', '#6610f2', '#6f42c1', '#d63384', '#fd7e14', '#198754'];
+                                        $color = $colors[$index % count($colors)];
+                                    @endphp
+                                    <div class="avatar-circle" style="background-color: {{ $color }};">
+                                        {{ strtoupper(substr($serviceAvis->auteur_nom ?? 'A', 0, 1)) }}
+                                    </div>
+                                </div>
+                                
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="mb-0 fw-bold">{{ $serviceAvis->auteur_nom ?? 'Utilisateur' }}</h6>
+                                        <small class="text-muted">{{ $serviceAvis->created_at->diffForHumans() }}</small>
+                                    </div>
+                                    
+                                    <div class="mb-2 text-warning small">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <i class="{{ $i <= $serviceAvis->note ? 'fas' : 'far text-secondary opacity-25' }} fa-star"></i>
+                                        @endfor
+                                    </div>
+                                    
+                                    <p class="text-secondary mb-0" style="font-size: 0.95rem; line-height: 1.5;">
+                                        {{ $serviceAvis->commentaire }}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <p class="comment">{{ $serviceAvis->commentaire }}</p>
-                    <small>Publié le : {{ $serviceAvis->created_at->format('d/m/Y') }}</small>
-                </li>
-            @empty
-                <li style="text-align: center; color: #6c757d; padding: 20px; background: #fff;">
-                    Soyez le premier à donner votre avis sur ProLocAuto !
-                </li>
-            @endforelse
-        </ul>
+                    @empty
+                        <div class="text-center py-5 text-muted bg-white rounded shadow-sm">
+                            <i class="far fa-comment-dots display-1 mb-3 opacity-25"></i>
+                            <h4>Aucun avis pour le moment</h4>
+                            <p>Soyez le premier à partager votre expérience !</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
 
+        </div>
     </div>
+
 </body>
 </html>

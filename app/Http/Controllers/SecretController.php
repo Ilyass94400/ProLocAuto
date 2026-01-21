@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Admin; // Ton modèle Admin
+use App\Models\Admin; 
 use Illuminate\Support\Facades\Hash;
 
 class SecretController extends Controller
 {
-    // 1. Afficher le formulaire secret
+    
     public function showForm()
     {
         return view('secret.create');
     }
 
-    // 2. Créer l'admin
+    
     public function store(Request $request)
     {
-        // Validation basique
+        
         $request->validate([
             'nom' => 'required|string',
             'prenom' => 'required|string',

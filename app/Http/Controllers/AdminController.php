@@ -9,11 +9,11 @@ use App\Models\Admin;
 use App\Models\User;
 use App\Models\Annonce;
 use App\Models\Commercial;
-// use App\Models\Reservation; // Retiré car plus utilisé ici
+
 
 class AdminController extends Controller
 {
-    // --- 1. CONNEXION ---
+
     public function showLogin() {
         return view('admin.login');
     }
@@ -30,13 +30,13 @@ class AdminController extends Controller
         return back()->withErrors(['mail' => 'Erreur login']);
     }
 
-    // --- 2. ACCUEIL ---
+    
     public function index() {
         $users = User::all();
         return view('admin.index', compact('users'));
     }
 
-    // --- 3. GESTION ANNONCES ---
+    
     public function manageAnnonces() {
         $annonces = Annonce::all();
         $annonceodia = null;
@@ -66,9 +66,7 @@ class AdminController extends Controller
         return redirect()->route('admin.annonces.manage');
     }
 
-    // --- (ANCIENNE SECTION 4. RÉSERVATION MANUELLE RETIRÉE) ---
-
-    // --- 5. GESTION DES COMMERCIAUX ---
+    
     public function createCommercial()
     {
         $commercials = Commercial::all();
@@ -94,7 +92,7 @@ class AdminController extends Controller
         return redirect()->route('admin.commercial.create')->with('success', 'Commercial créé avec succès !');
     }
 
-    // --- 6. DÉCONNEXION ---
+    
     public function logout(Request $request) {
         Auth::guard('admin')->logout();
         $request->session()->invalidate();

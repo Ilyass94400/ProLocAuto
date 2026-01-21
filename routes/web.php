@@ -17,6 +17,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\CommercialController;
 use App\Http\Controllers\DemandeClientController;
 use App\Http\Controllers\DemandeController;
+
 use App\Http\Controllers\SecretController; // A SUPPRIMER
 
 /*
@@ -60,7 +61,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clients/notification', [AccountController::class, 'notifications'])->name('clients.notifications');
     Route::post('/clients/notification/reply', [AccountController::class, 'reply'])->name('clients.notification.reply');
     
-    // --- NOUVELLE ROUTE : MARQUER COMME VU ---
     Route::post('/clients/notification/{id}/read', [AccountController::class, 'markAsRead'])->name('clients.notification.read');
 
     // Profil

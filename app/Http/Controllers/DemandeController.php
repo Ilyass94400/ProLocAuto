@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class DemandeController extends Controller
 {
-    // 1. AFFICHER LE FORMULAIRE
+
     public function showForm($id_annonce)
     {
         if (!Auth::check()) {
@@ -17,11 +17,11 @@ class DemandeController extends Controller
         }
 
         $annonce = Annonce::findOrFail($id_annonce);
-        // On renvoie vers la vue 'formulaire' qu'on va créer à l'étape 4
+
         return view('demandes.formulaire', compact('annonce'));
     }
 
-    // 2. ENREGISTRER LA DEMANDE
+    
     public function submitForm(Request $request, $id_annonce)
     {
         if (!Auth::check()) { return redirect()->route('login'); }

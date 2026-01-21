@@ -7,13 +7,14 @@ use App\Models\Demande;
 use App\Models\Reservation;
 use App\Models\Annonce;
 use App\Models\Message;
-use App\Models\User;         // Pour retrouver le client
-use App\Models\Notification; // Pour créer la réponse
+use App\Models\User;         
+use App\Models\Notification; 
 use Illuminate\Support\Facades\Auth;
 
 class CommercialController extends Controller
 {
-    // ... Tes fonctions existantes (login, index, etc.) ...
+
+
     public function showLogin() { return view('commercial.logincommercial'); }
     public function authenticate(Request $request) {
         $credentials = $request->validate(['email'=>'required|email','password'=>'required']);
@@ -33,23 +34,24 @@ class CommercialController extends Controller
         return redirect()->route('commercial.messagerie')->with('success', 'Message envoyé !');
     }
 
-    // --- NOUVELLE FONCTION : RÉPONDRE À UN MESSAGE REÇU ---
+    
     public function replyToMessage(Request $request, $id)
     {
-        // 1. Récupérer le message d'origine
+        
         $originalMessage = Message::findOrFail($id);
 
-        // 2. Chercher si un client possède cet email
+    
         $client = User::where('email', $originalMessage->email)->first();
 
-        // 3. Validation
+        
         $request->validate(['response_message' => 'required|string']);
 
         if (!$client) {
             return back()->with('error', 'Impossible de répondre en interne : cet email ne correspond à aucun compte client. Utilisez votre boite mail classique.');
         }
 
-        // 4. Créer la notification (la réponse) pour le client
+        
+        
         Notification::create([
             'user_id' => $client->id,
             'sujet'   => 'RE: ' . $originalMessage->subject,

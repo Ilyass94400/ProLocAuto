@@ -4,63 +4,71 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Reservation;
+use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon; 
 
 class ReservationController extends Controller
 {
-
-
     
     public function update(Request $request, $id)
     {
-        
         $reservation = Reservation::where('id', $id)
                                   ->where('user_id', Auth::id())
                                   ->firstOrFail();
 
         
         if($reservation->statut === 'Annulée') {
-            return back()->with('error', 'Cette réservation est annulée et ne peut plus être modifiée.');
+            return back()->with('error', 'Cette réservation est annulée.');
         }
 
         
+        if (Carbon::now()->addDays(3)->gt($reservation->date_debut)) {
+            return back()->with('error', 'Impossible de modifier : le début de la réservation est dans moins de 3 jours.');
+        }
+
         $request->validate([
-            'date_debut' => 'required|date|after_or_equal:today',
-            'duree' => 'required|string',
+            'message_modif' => 'required|string|min:10',
         ]);
 
-        
+        // 3. Envoi du message et changement de statut
+        Message::create([
+            'name' => Auth::user()->name,
+            'email' => Auth::user()->email,
+            'subject' => 'Demande de modification - Réservation #' . $reservation->id,
+            'message' => "Le client souhaite modifier sa réservation pour l'espace : " . $reservation->annonce->titre . ".\n\nDétails de la demande :\n" . $request->message_modif,
+            'lu' => false
+        ]);
+
         $reservation->update([
-            'date_debut' => $request->date_debut,
-            'duree' => $request->duree,
+            'statut' => 'En attente de modification'
         ]);
 
-        return back()->with('success', 'Votre réservation a été modifiée avec succès.');
+        return back()->with('success', 'Votre demande a été envoyée. Le statut de votre réservation a été mis à jour.');
     }
 
-    
+    // --- ANNULER ---
     public function annuler($id)
     {
-        $reservation = Reservation::where('id', $id)
-                                  ->where('user_id', Auth::id())
-                                  ->firstOrFail();
-
-        if($reservation->statut === 'Annulée') {
-            return back()->with('error', 'Cette réservation est déjà annulée.');
-        }
+        $reservation = Reservation::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        
+        if($reservation->statut === 'Annulée') return back()->with('error', 'Déjà annulée.');
 
         
-        $reservation->update(['statut' => 'Annulée']);
+        if (Carbon::now()->addDays(3)->gt($reservation->date_debut)) {
+            return back()->with('error', 'Annulation impossible : le préavis de 3 jours est dépassé.');
+        }
 
-    
+        $reservation->update(['statut' => 'Annulée']);
+        
         if($reservation->annonce) {
             $reservation->annonce->update(['statut' => 'disponible']);
         }
 
-        return back()->with('success', 'Réservation annulée. L\'espace a été libéré.');
+        return back()->with('success', 'Réservation annulée.');
     }
-
-
-    public function create($id) { /* ... */ }
-    public function store(Request $request) { /* ... */ }
+    
+    // Fonctions legacy
+    public function create($id) {}
+    public function store(Request $request) {}
 }

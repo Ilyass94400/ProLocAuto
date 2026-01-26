@@ -16,7 +16,7 @@ class Notification extends Model
         'lu'
     ];
 
-    // Relation pour retrouver le client associé
+    
     public function user()
     {
         return $this->belongsTo(User::class);

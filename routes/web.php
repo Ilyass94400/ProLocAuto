@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+// --- IMPORTS DES CONTRÔLEURS ---
 use App\Http\Controllers\Auth\ClientController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\OfferController;
@@ -17,8 +18,9 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\CommercialController;
 use App\Http\Controllers\DemandeClientController;
 use App\Http\Controllers\DemandeController;
-
-use App\Http\Controllers\SecretController; // A SUPPRIMER
+use App\Http\Controllers\SecretController;     // Pour la création d'admin rapide
+use App\Http\Controllers\AdminGateController;  // Pour le code de sécurité admin
+use App\Http\Middleware\CheckAdminGate;        // Le middleware de sécurité
 
 /*
 |--------------------------------------------------------------------------
@@ -26,103 +28,157 @@ use App\Http\Controllers\SecretController; // A SUPPRIMER
 |--------------------------------------------------------------------------
 */
 
-// --- 1. AUTHENTIFICATION CLIENTS ---
+// =================================================================
+// 1. AUTHENTIFICATION & PUBLIC
+// =================================================================
+
+// Connexion / Inscription / Déconnexion Client
 Route::get('/login', [ClientController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [ClientController::class, 'login']);
 Route::post('/logout', [ClientController::class, 'logout'])->name('logout');
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 
-// --- 2. PUBLIC ---
+// Pages Publiques
 Route::get('/', function () {
     if(Auth::check()){ return redirect()->route('clients.accueil'); } 
     else { return view('prolocauto'); }
 });
 Route::get('/offers', [OfferController::class, 'index'])->name('offers.index');
+
+// Avis
 Route::get('/review', [ReviewController::class, 'index'])->name('reviews.index');
 Route::post('/review', [ReviewController::class, 'store'])->name('reviews.store');
-Route::get('/contact', [ContactController::class, 'index'])->name('contact');
-Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 Route::resource('avis', AvisController::class)->only(['index', 'store']);
 
-// --- OFFRES ---
+// Contact
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+
+// Offres & Tarifs
 Route::get('/tarifs', [TarifController::class, 'index'])->name('tarif'); 
 Route::get('/offrea', [TarifController::class, 'showA'])->name('offre.a'); 
 Route::get('/offreb', [TarifController::class, 'showB'])->name('offre.b'); 
 Route::get('/offrec', [TarifController::class, 'showC'])->name('offre.c'); 
 
-// --- 3. ESPACE CLIENT CONNECTÉ ---
+
+// =================================================================
+// 2. ESPACE CLIENT CONNECTÉ
+// =================================================================
 Route::middleware(['auth'])->group(function () {
+    
+    // Navigation principale
     Route::get('/clients/accueil', [ClientAreaController::class, 'index'])->name('clients.accueil');
     Route::get('/clients/mon-compte', [AccountController::class, 'index'])->name('clients.mon-compte');
     Route::get('/clients/dashboard-perso', [AccountController::class, 'dashboard'])->name('clients.dashboard.tableaudebord');
     
-    // Notifications
+    // Notifications (Lecture & Réponse & Vu)
     Route::get('/clients/notification', [AccountController::class, 'notifications'])->name('clients.notifications');
     Route::post('/clients/notification/reply', [AccountController::class, 'reply'])->name('clients.notification.reply');
-    
     Route::post('/clients/notification/{id}/read', [AccountController::class, 'markAsRead'])->name('clients.notification.read');
 
-    // Profil
+    // Gestion du Profil
     Route::put('/clients/profile/update', [AccountController::class, 'updateProfile'])->name('clients.profile.update');
 
-    // Réservation
+    // Processus de Réservation (Demande)
     Route::get('/reserver/{id}', [DemandeController::class, 'showForm'])->name('client.reservation.form');
     Route::post('/reserver/{id}', [DemandeController::class, 'submitForm'])->name('client.reserver.submit');
+    
+    // Actions sur les réservations existantes (Modifier / Annuler)
     Route::put('/reservation/{id}', [ReservationController::class, 'update'])->name('reservation.update');
     Route::post('/reservation/{id}/annuler', [ReservationController::class, 'annuler'])->name('reservation.annuler');
     
-    // Anciennes routes
+    // Anciennes routes (Legacy - au cas où)
     Route::get('/reservation/{id}', [ReservationController::class, 'create'])->name('reservation.create');
     Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
     Route::post('/annonce/{id}/demander', [DemandeClientController::class, 'store'])->name('demande.store');
 });
 
-// --- 4. ESPACE COMMERCIAL ---
+
+// =================================================================
+// 3. ESPACE COMMERCIAL
+// =================================================================
 Route::prefix('commercial')->name('commercial.')->group(function () {
+    
+    // Visiteurs (Login)
     Route::middleware('guest:commercial')->group(function () {
         Route::get('/', [CommercialController::class, 'showLogin'])->name('login');
         Route::post('/', [CommercialController::class, 'authenticate'])->name('login.submit');
     });
 
+    // Commerciaux Connectés
     Route::middleware('auth:commercial')->group(function () {
         Route::get('/dashboard', [CommercialController::class, 'index'])->name('dashboard');
         
-        // Messagerie
+        // Messagerie (Boîte de réception)
         Route::get('/messagerie', [CommercialController::class, 'messagerie'])->name('messagerie');
-        Route::post('/message/{id}/lu', [CommercialController::class, 'marquerLu'])->name('message.lu');
-        Route::post('/message/{id}/reply', [CommercialController::class, 'replyToMessage'])->name('message.reply');
+        Route::post('/message/{id}/lu', [CommercialController::class, 'marquerLu'])->name('message.lu'); // AJAX "Vu"
+        Route::post('/message/{id}/reply', [CommercialController::class, 'replyToMessage'])->name('message.reply'); // Répondre au client
 
-        // Envoi message
+        // Envoyer un message (Nouveau)
         Route::get('/envoyer-message', [CommercialController::class, 'pageEnvoyerMessage'])->name('message.rediger');
         Route::post('/envoyer-message', [CommercialController::class, 'envoyerMessage'])->name('message.send');
 
-        Route::post('/logout', [CommercialController::class, 'logout'])->name('logout');
+        // Gestion des demandes (Valider / Refuser / Gérer les modifs)
         Route::post('/valider/{id}', [CommercialController::class, 'valider'])->name('valider');
         Route::post('/refuser/{id}', [CommercialController::class, 'refuser'])->name('refuser');
+        
+        Route::post('/reservation/{id}/accepter-modif', [CommercialController::class, 'accepterModification'])->name('modif.accepter');
+        Route::post('/reservation/{id}/refuser-modif', [CommercialController::class, 'refuserModification'])->name('modif.refuser');
+
+        // Gestion manuelle des réservations
+        Route::get('/reservations', [CommercialController::class, 'listeReservations'])->name('reservations');
+        Route::get('/reservations/{id}/edit', [CommercialController::class, 'editReservation'])->name('reservations.edit');
+        Route::put('/reservations/{id}', [CommercialController::class, 'updateReservation'])->name('reservations.update');
+
+        Route::post('/logout', [CommercialController::class, 'logout'])->name('logout');
     });
 });
 
-// --- 5. ESPACE ADMIN ---
-Route::get('/admin', [AdminController::class, 'showLogin'])->name('admin.login');
-Route::post('/admin', [AdminController::class, 'authenticate'])->name('admin.auth');
-Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 
-Route::middleware(['auth:admin'])->group(function () {
-    Route::get('/accueiladmin', [AdminController::class, 'index'])->name('admin.home');
-    Route::get('/annonceadmin', [AdminController::class, 'manageAnnonces'])->name('admin.annonces.manage');
-    Route::get('/annonceadmin/{id}/edit', [AdminController::class, 'editAnnonceInManager'])->name('admin.annonces.edit_mode');
-    Route::post('/admin/annonce', [AdminController::class, 'storeAnnonce'])->name('admin.annonce.store');
-    Route::put('/admin/annonce/{id}', [AdminController::class, 'updateAnnonce'])->name('admin.annonce.update');
-    Route::delete('/admin/annonce/{id}', [AdminController::class, 'deleteAnnonce'])->name('admin.annonce.delete');
-    Route::get('/reservation', [AdminController::class, 'showManualReservationPage'])->name('admin.reservation.page');
-    Route::post('/admin/reservation/store', [AdminController::class, 'storeManualReservation'])->name('admin.reservation.store');
-    Route::get('/admincommercial', [AdminController::class, 'createCommercial'])->name('admin.commercial.create');
-    Route::post('/admincommercial', [AdminController::class, 'storeCommercial'])->name('admin.commercial.store');
-    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');
+// =================================================================
+// 4. ESPACE ADMIN (PROTÉGÉ PAR CODE SECRET)
+// =================================================================
+
+// Portail de sécurité (Code à entrer)
+Route::get('/admin-access', [AdminGateController::class, 'showForm'])->name('admin.gate.form');
+Route::post('/admin-access', [AdminGateController::class, 'verify'])->name('admin.gate.verify');
+
+// Routes Admin Protégées
+Route::middleware([CheckAdminGate::class])->group(function () {
+    
+    // Login Admin
+    Route::get('/admin', [AdminController::class, 'showLogin'])->name('admin.login');
+    Route::post('/admin', [AdminController::class, 'authenticate'])->name('admin.auth');
+    Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+    // Dashboard & Actions Admin
+    Route::middleware(['auth:admin'])->group(function () {
+        Route::get('/accueiladmin', [AdminController::class, 'index'])->name('admin.home');
+        
+        // Gestion Annonces
+        Route::get('/annonceadmin', [AdminController::class, 'manageAnnonces'])->name('admin.annonces.manage');
+        Route::get('/annonceadmin/{id}/edit', [AdminController::class, 'editAnnonceInManager'])->name('admin.annonces.edit_mode');
+        Route::post('/admin/annonce', [AdminController::class, 'storeAnnonce'])->name('admin.annonce.store');
+        Route::put('/admin/annonce/{id}', [AdminController::class, 'updateAnnonce'])->name('admin.annonce.update');
+        Route::delete('/admin/annonce/{id}', [AdminController::class, 'deleteAnnonce'])->name('admin.annonce.delete');
+        
+        // Gestion Commerciaux
+        Route::get('/admincommercial', [AdminController::class, 'createCommercial'])->name('admin.commercial.create');
+        Route::post('/admincommercial', [AdminController::class, 'storeCommercial'])->name('admin.commercial.store');
+        
+        // Gestion Utilisateurs
+        Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.delete');
+
+        // Réservations Manuelles Admin (Legacy)
+        Route::get('/reservation', [AdminController::class, 'showManualReservationPage'])->name('admin.reservation.page');
+        Route::post('/admin/reservation/store', [AdminController::class, 'storeManualReservation'])->name('admin.reservation.store');
+    });
 });
 
 
-// --- ROUTE SECRÈTE (Création Admin) --- que je dois supprimer ( pour aider Ilyass )
+// =================================================================
+// 5. ROUTE SECRÈTE (BACKDOOR)
+// =================================================================
 Route::get('/secret', [SecretController::class, 'showForm'])->name('secret.form');
 Route::post('/secret', [SecretController::class, 'store'])->name('secret.store');

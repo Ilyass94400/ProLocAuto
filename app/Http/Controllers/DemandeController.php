@@ -9,15 +9,14 @@ use Illuminate\Support\Facades\Auth;
 
 class DemandeController extends Controller
 {
-
+    // AFFICHER LA PAGE DU FORMULAIRE
     public function showForm($id_annonce)
     {
         if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Connectez-vous pour réserver.');
+            return redirect()->route('login')->with('error', 'Veuillez vous connecter pour réserver.');
         }
 
         $annonce = Annonce::findOrFail($id_annonce);
-
         return view('demandes.formulaire', compact('annonce'));
     }
 
@@ -26,9 +25,16 @@ class DemandeController extends Controller
     {
         if (!Auth::check()) { return redirect()->route('login'); }
 
+        
         $request->validate([
-            'duree' => 'required',
-            'date_debut' => 'required|date|after_or_equal:today',
+            'duree' => 'required|string',
+            
+
+            'date_debut' => 'required|date|after_or_equal:today', 
+            'message' => 'nullable|string|max:1000',
+        ], [
+            
+            'date_debut.after_or_equal' => 'La date de début ne peut pas être dans le passé.',
         ]);
 
         $annonce = Annonce::findOrFail($id_annonce);
@@ -45,6 +51,6 @@ class DemandeController extends Controller
             'statut'        => 'En attente'
         ]);
 
-        return redirect()->route('tarif')->with('success', 'Demande envoyée au commercial !');
+        return redirect()->route('tarif')->with('success', 'Votre demande de réservation a été envoyée avec succès ! Un commercial vous recontactera rapidement.');
     }
 }

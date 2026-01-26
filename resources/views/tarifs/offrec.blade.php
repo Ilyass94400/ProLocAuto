@@ -36,7 +36,7 @@
             @forelse($annonces as $annonce)
                 <div class="col-md-4 mb-4">
                     <div class="card card-annonce h-100 shadow-sm border-0">
-                        <!-- Header NOIR pour le Type 3 -->
+                        
                         <div class="card-header bg-dark text-white text-center py-3">
                             <h4 class="my-0 fw-normal">{{ $annonce->titre }}</h4>
                         </div>
@@ -48,7 +48,8 @@
                                 <li class="text-muted">{{ $annonce->description }}</li>
                             </ul>
                             <div class="mt-auto w-100">
-                                <!-- Le lien de réservation -->
+                                
+
                                 <a href="{{ route('client.reservation.form', $annonce->id) }}" class="btn w-100 btn-lg btn-outline-dark">
                                     Réserver cette suite
                                 </a>

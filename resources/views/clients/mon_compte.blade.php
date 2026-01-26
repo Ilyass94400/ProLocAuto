@@ -16,19 +16,7 @@
         .account-container { max-width: 1200px; margin: 50px auto; padding: 0 20px; }
         .dashboard-grid { display: grid; grid-template-columns: 1fr 3fr; gap: 30px; }
         .sidebar-menu { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        /* Modification pour permettre l'alignement flex du badge */
-        .sidebar-menu a { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 12px 0; 
-            text-decoration: none; 
-            color: #555; 
-            border-bottom: 1px solid #eee; 
-        }
-        .sidebar-menu a:hover { color: var(--primary-color); }
-        .sidebar-menu a:last-child { border-bottom: none; }
-        
+        .sidebar-menu a { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; text-decoration: none; color: #555; border-bottom: 1px solid #eee; }
         .main-content { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .info-card { background-color: #f1f8ff; padding: 20px; border-radius: 6px; margin-bottom: 20px; border-left: 5px solid var(--primary-color); }
         .reservation-item { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
@@ -62,8 +50,6 @@
             <div class="sidebar-menu">
                 <a href="{{ route('clients.dashboard.tableaudebord') }}">Tableau de bord</a>
                 <a href="{{ route('clients.mon-compte') }}">Mes Réservations</a>
-                
-                <!-- LIEN NOTIFICATION AVEC BADGE -->
                 <a href="{{ route('clients.notifications') }}">
                     Notifications
                     @if(isset($unreadCount) && $unreadCount > 0)
@@ -79,6 +65,12 @@
                     <h2>Vos Réservations</h2>
                     
                     @forelse($reservations as $reservation)
+                        
+                        {{-- Calcul de la condition "Trop tard" (moins de 3 jours) --}}
+                        @php
+                            $isTooLate = \Carbon\Carbon::now()->addDays(3)->gt($reservation->date_debut);
+                        @endphp
+
                         <div class="reservation-item">
                             <div>
                                 <h5 class="mb-1 text-primary">{{ $reservation->annonce->titre ?? 'Espace (supprimé)' }}</h5>
@@ -89,60 +81,70 @@
                                 <div class="mt-1">
                                     @if($reservation->statut == 'Annulée')
                                         <span class="badge bg-danger">🚫 Annulée</span>
+                                    @elseif($reservation->statut == 'En attente de modification')
+                                        <span class="badge bg-warning text-dark">⏳ Modification demandée</span>
+                                    @elseif($reservation->statut == 'Modification refusée')
+                                        <span class="badge bg-danger">❌ Modification refusée</span>
                                     @else
                                         <span class="badge bg-success">✅ Confirmée</span>
                                     @endif
-                                    <span class="fw-bold ms-2">{{ $reservation->prix }} €</span>
                                 </div>
                             </div>
 
                             @if($reservation->statut != 'Annulée')
                                 <div class="res-actions">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#editModal-{{ $reservation->id }}">
-                                        Modifier
-                                    </button>
+                                    
+                                    <!-- CAS 1 : C'EST TROP TARD (< 3 jours) -->
+                                    @if($isTooLate)
+                                        <span class="badge bg-secondary text-white p-2" title="Délai de préavis de 3 jours dépassé">
+                                            <i class="fas fa-lock"></i> Verrouillé (J-3)
+                                        </span>
+                                    
+                                    <!-- CAS 2 : STATUT EN ATTENTE -->
+                                    @elseif($reservation->statut == 'En attente de modification')
+                                        <small class="text-muted fst-italic align-self-center">Traitement en cours...</small>
+                                    
+                                    <!-- CAS 3 : ON PEUT MODIFIER/ANNULER -->
+                                    @else
+                                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editModal-{{ $reservation->id }}">
+                                            Demander modif.
+                                        </button>
 
-                                    <form action="{{ route('reservation.annuler', $reservation->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr ?');">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Annuler</button>
-                                    </form>
+                                        <form action="{{ route('reservation.annuler', $reservation->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr ?');">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Annuler</button>
+                                        </form>
+                                    @endif
+
                                 </div>
                             @endif
                         </div>
 
-                        <!-- MODAL DE MODIFICATION -->
+                        <!-- MODAL (N'apparaît que si pas trop tard, mais on laisse le code ici) -->
                         <div class="modal fade" id="editModal-{{ $reservation->id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Modifier la réservation</h5>
+                                    <div class="modal-header bg-light">
+                                        <h5 class="modal-title">Demander une modification</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <form action="{{ route('reservation.update', $reservation->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
                                         <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label class="form-label">Date de début</label>
-                                                <input type="date" name="date_debut" class="form-control" 
-                                                       value="{{ $reservation->date_debut->format('Y-m-d') }}" 
-                                                       min="{{ date('Y-m-d') }}" required>
+                                            <div class="alert alert-info small">
+                                                <i class="fas fa-info-circle"></i> Vous pouvez demander une modification jusqu'à 3 jours avant le début de la location.
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label">Durée</label>
-                                                <select name="duree" class="form-select" required>
-                                                    <option value="1 mois" {{ $reservation->duree == '1 mois' ? 'selected' : '' }}>1 mois</option>
-                                                    <option value="3 mois" {{ $reservation->duree == '3 mois' ? 'selected' : '' }}>3 mois</option>
-                                                    <option value="6 mois" {{ $reservation->duree == '6 mois' ? 'selected' : '' }}>6 mois</option>
-                                                    <option value="1 an" {{ $reservation->duree == '1 an' ? 'selected' : '' }}>1 an</option>
-                                                </select>
+                                                <label class="form-label fw-bold">Votre demande :</label>
+                                                <textarea name="message_modif" class="form-control" rows="4" placeholder="Bonjour, je souhaiterais..." required></textarea>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="submit" class="btn btn-primary">Envoyer la demande</button>
                                         </div>
                                     </form>
                                 </div>

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ClientAreaController extends Controller
 {
+    
     public function index()
     {
         $client = Auth::user(); 

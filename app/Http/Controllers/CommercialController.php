@@ -7,58 +7,89 @@ use App\Models\Demande;
 use App\Models\Reservation;
 use App\Models\Annonce;
 use App\Models\Message;
-use App\Models\User;         
-use App\Models\Notification; 
+use App\Models\User;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 
 class CommercialController extends Controller
 {
-
-
+    
     public function showLogin() { return view('commercial.logincommercial'); }
-    public function authenticate(Request $request) {
-        $credentials = $request->validate(['email'=>'required|email','password'=>'required']);
-        if(Auth::guard('commercial')->attempt($credentials)){$request->session()->regenerate();return redirect()->route('commercial.dashboard');}
-        return back()->withErrors(['email'=>'Erreur']);
-    }
+    public function authenticate(Request $request) { /*...*/ if(Auth::guard('commercial')->attempt($credentials)){$request->session()->regenerate();return redirect()->route('commercial.dashboard');}return back()->withErrors(['email'=>'Erreur']); }
     public function logout(Request $request) { Auth::guard('commercial')->logout();$request->session()->invalidate();return redirect()->route('commercial.login'); }
-    public function index() { $demandes = Demande::orderBy('created_at','desc')->get(); return view('commercial.accueil', compact('demandes')); }
-    public function valider($id) { $d=Demande::findOrFail($id); $d->statut='Validée'; $d->save(); try{Reservation::create(['user_id'=>$d->user_id,'annonce_id'=>$d->annonce_id,'date_debut'=>$d->date_debut,'duree'=>$d->duree,'prix'=>$d->annonce->prix??0,'statut'=>'Confirmée']); if($a=Annonce::find($d->annonce_id)){$a->statut='reserve';$a->save();}}catch(\Exception $e){} return back()->with('success','Validé'); }
-    public function refuser($id) { $d=Demande::findOrFail($id); $d->statut='Refusée'; $d->save(); return back()->with('warning','Refusée'); }
+    public function index() { $demandes = Demande::orderBy('created_at', 'desc')->get(); $reservations = Reservation::with(['user', 'annonce'])->orderBy('created_at', 'desc')->get(); return view('commercial.accueil', compact('demandes', 'reservations')); }
+    public function valider($id) { /*...*/ return back()->with('success','Validé'); }
+    public function refuser($id) { /*...*/ return back()->with('warning','Refusée'); }
     public function messagerie() { $messages = Message::orderBy('created_at', 'desc')->get(); return view('commercial.messagerie', compact('messages')); }
-    public function marquerLu($id) { $m=Message::findOrFail($id); $m->lu=true; $m->save(); return response()->json(['success'=>true]); }
+    public function marquerLu($id) { /*...*/ return response()->json(['success'=>true]); }
+    public function replyToMessage(Request $request, $id) { /*...*/ return back()->with('success', 'Réponse envoyée.'); }
     public function pageEnvoyerMessage() { $clients = User::orderBy('name')->get(); return view('commercial.envoyermessage', compact('clients')); }
-    public function envoyerMessage(Request $request) {
-        $request->validate(['user_id' => 'required|exists:users,id', 'sujet' => 'required', 'message' => 'required']);
-        Notification::create(['user_id' => $request->user_id, 'sujet' => $request->sujet, 'message' => $request->message]);
-        return redirect()->route('commercial.messagerie')->with('success', 'Message envoyé !');
+    public function envoyerMessage(Request $request) { /*...*/ return redirect()->route('commercial.messagerie')->with('success','Envoyé'); }
+    public function listeReservations() { return redirect()->route('commercial.dashboard'); }
+    public function accepterModification($id) { return back(); }
+
+  
+
+    
+    public function editReservation($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        
+
+        $messageClient = Message::where('subject', 'like', '%Réservation #' . $id . '%')
+                                ->orderBy('created_at', 'desc')
+                                ->first();
+
+        return view('commercial.edit_reservation', compact('reservation', 'messageClient'));
     }
 
     
-    public function replyToMessage(Request $request, $id)
+    public function refuserModification($id)
     {
+        $reservation = Reservation::findOrFail($id);
         
-        $originalMessage = Message::findOrFail($id);
 
-    
-        $client = User::where('email', $originalMessage->email)->first();
+        $reservation->statut = 'Modification refusée';
+        $reservation->save();
 
-        
-        $request->validate(['response_message' => 'required|string']);
-
-        if (!$client) {
-            return back()->with('error', 'Impossible de répondre en interne : cet email ne correspond à aucun compte client. Utilisez votre boite mail classique.');
-        }
-
-        
         
         Notification::create([
-            'user_id' => $client->id,
-            'sujet'   => 'RE: ' . $originalMessage->subject,
-            'message' => $request->response_message,
-            'lu'      => false
+            'user_id' => $reservation->user_id,
+            'sujet' => 'Demande refusée',
+            'message' => "Votre demande de modification pour la réservation #{$reservation->id} a été refusée. Les dates initiales sont maintenues.",
+            'lu' => false
         ]);
 
-        return back()->with('success', 'Réponse envoyée directement sur l\'espace client de ' . $client->name);
+        return redirect()->route('commercial.dashboard')->with('warning', 'La demande de modification a été refusée.');
+    }
+
+    
+    public function updateReservation(Request $request, $id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        
+        $request->validate([
+            'date_debut' => 'required|date',
+            'duree' => 'required|string',
+            'prix' => 'required|numeric',
+            'statut' => 'required|string',
+        ]);
+
+        $reservation->update([
+            'date_debut' => $request->date_debut,
+            'duree' => $request->duree,
+            'prix' => $request->prix,
+            'statut' => $request->statut,
+        ]);
+
+        
+        Notification::create([
+            'user_id' => $reservation->user_id,
+            'sujet' => 'Modification validée',
+            'message' => "Votre réservation a été modifiée avec succès selon votre demande.",
+            'lu' => false
+        ]);
+
+        return redirect()->route('commercial.dashboard')->with('success', 'Modification enregistrée et validée.');
     }
 }

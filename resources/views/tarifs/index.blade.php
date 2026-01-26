@@ -25,10 +25,10 @@
         /* --- Contenu de la Page de Tarifs --- */
         .pricing-page-container {
             max-width: 1200px;
-            margin: 50px auto 50px; /* Réduit un peu la marge du haut pour le bouton */
+            margin: 50px auto 50px;
             padding: 40px 20px;
             text-align: center;
-            position: relative; /* Pour positionner des éléments si besoin */
+            position: relative;
         }
         h1 {
             color: var(--primary-color);
@@ -38,7 +38,23 @@
         .intro-text {
             font-size: 1.1em;
             color: #6c757d;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
+        }
+
+        /* --- NOUVEAU STYLE POUR LE MESSAGE D'INFO --- */
+        .policy-alert {
+            display: inline-block;
+            background-color: #e7f1ff; /* Fond bleu très clair */
+            color: #0c5460;
+            border: 1px solid #b8daff;
+            padding: 12px 25px;
+            border-radius: 50px;
+            margin-bottom: 40px;
+            font-size: 0.95em;
+        }
+        .policy-alert i {
+            color: var(--primary-color);
+            margin-right: 8px;
         }
 
         /* --- Bouton Retour Accueil --- */
@@ -155,8 +171,6 @@
     </style>
 </head>
 <body>
-    {{-- La navbar et le footer doivent être gérés par votre layout général --}}
-    {{-- @include('layouts.navbar') --}}
 
     <div class="pricing-page-container">
         
@@ -169,6 +183,12 @@
 
         <h1>Nos Plans de Coworking Flexibles</h1>
         <p class="intro-text">Choisissez le plan ProLocAuto qui correspond le mieux à votre rythme de travail et vos besoins en communauté.</p>
+
+        <!-- AJOUT DU MESSAGE D'INFORMATION -->
+        <div class="policy-alert">
+            <i class="fas fa-info-circle"></i> 
+            L'annulation ou la modification des réservations peuvent se faire jusqu'à maximum <strong>J-3 avant le début</strong>.
+        </div>
 
         <div class="pricing-grid">
            
@@ -244,7 +264,6 @@
             <p><strong>Besoin d'une offre sur mesure ?</strong> Contactez notre équipe commerciale au +33 1 80 88 88 88 ou via la <a href="{{ route('contact') }}">page de contact</a>.</p>
         </div>
     </div>
-
     
 </body>
 </html>

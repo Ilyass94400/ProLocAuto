@@ -260,11 +260,6 @@
                     <p>Mettez à jour vos informations personnelles et votre mot de passe.</p>
                 </div>
 
-                <div class="card">
-                    <h3>Facturation et Paiements</h3>
-                    <p>Téléchargez vos factures et gérez vos méthodes de paiement.</p>
-                </div>
-
             </div>
         </section>
     </main>

@@ -16,9 +16,10 @@
         /* Sidebar */
         .sidebar { width: var(--sidebar-width); height: 100vh; background: linear-gradient(180deg, #4e73df 10%, #224abe 100%); color: white; position: fixed; top: 0; left: 0; padding-top: 20px; z-index: 1000; }
         .sidebar-brand { display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; margin-bottom: 30px; text-decoration: none; color: white; }
-        .nav-link { display: block; color: rgba(255,255,255,.8); padding: 15px 25px; text-decoration: none; font-weight: 600; }
+        .nav-link { display: block; color: rgba(255,255,255,.8); padding: 15px 25px; text-decoration: none; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
         .nav-link:hover { color: white; background: rgba(255,255,255,0.1); }
         .nav-link.active { background: rgba(255,255,255,0.15); border-left: 4px solid white; color: white; }
+        .nav-link span.link-text { flex-grow: 1; margin-left: 10px; }
         
         /* Main Content */
         .main-content { margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-height: 100vh; }
@@ -38,7 +39,7 @@
         
         .btn-logout { background: none; border: none; color: #e74a3b; }
         
-        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span { display: none; } .main-content { margin-left: 70px; } }
+        @media (max-width: 768px) { .sidebar { width: 70px; } .sidebar span.link-text, .sidebar-brand span, .sidebar .badge { display: none; } .main-content { margin-left: 70px; } }
     </style>
 </head>
 <body>
@@ -47,8 +48,26 @@
     <nav class="sidebar">
         <a href="{{ route('commercial.dashboard') }}" class="sidebar-brand"><i class="fas fa-building me-2"></i> <span>ProLocAuto</span></a>
         <ul class="p-0">
-            <li class="nav-item"><a class="nav-link active" href="{{ route('commercial.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i> <span>Dashboard</span></a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ route('commercial.messagerie') }}"><i class="fas fa-envelope me-2"></i> <span>Messagerie</span></a></li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ route('commercial.dashboard') }}">
+                    <div>
+                        <i class="fas fa-tachometer-alt"></i> 
+                        <span class="link-text">Dashboard</span>
+                    </div>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('commercial.messagerie') }}">
+                    <div>
+                        <i class="fas fa-envelope"></i> 
+                        <span class="link-text">Messagerie</span>
+                    </div>
+                    <!-- BADGE NOTIFICATION SIDEBAR -->
+                    @if(isset($unreadMessages) && $unreadMessages > 0)
+                        <span class="badge bg-danger rounded-pill">{{ $unreadMessages }}</span>
+                    @endif
+                </a>
+            </li>
         </ul>
     </nav>
 
@@ -70,7 +89,17 @@
                 <h1 class="h3 mb-0 text-gray-800">Vue d'ensemble</h1>
                 <div>
                     <a href="{{ route('commercial.message.rediger') }}" class="btn btn-success btn-sm shadow-sm me-2"><i class="fas fa-pen me-1"></i> Nouveau message</a>
-                    <a href="{{ route('commercial.messagerie') }}" class="btn btn-primary btn-sm shadow-sm"><i class="fas fa-envelope me-1"></i> Messagerie</a>
+                    
+                    <a href="{{ route('commercial.messagerie') }}" class="btn btn-primary btn-sm shadow-sm position-relative">
+                        <i class="fas fa-envelope me-1"></i> Messagerie
+                        <!-- BADGE NOTIFICATION BOUTON -->
+                        @if(isset($unreadMessages) && $unreadMessages > 0)
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ $unreadMessages }}
+                                <span class="visually-hidden">messages non lus</span>
+                            </span>
+                        @endif
+                    </a>
                 </div>
             </div>
 
@@ -183,13 +212,22 @@
                                     </td>
                                     <td class="fw-bold">{{ $res->prix }} €</td>
                                     <td>
-                                        @if($res->statut == 'Confirmée') <span class="badge bg-success">Actif</span>
-                                        @elseif($res->statut == 'Payée') <span class="badge bg-primary">Payé</span>
-                                        @elseif($res->statut == 'Annulée') <span class="badge bg-danger">Annulé</span>
-                                        @else <span class="badge bg-secondary">{{ $res->statut }}</span> @endif
+                                        @if($res->statut == 'Confirmée') 
+                                            <span class="badge bg-success">Actif</span>
+                                        @elseif($res->statut == 'Payée') 
+                                            <span class="badge bg-primary">Payé</span>
+                                        @elseif($res->statut == 'En attente de modification') 
+                                            <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-circle"></i> Demande Modif.</span>
+                                        @elseif($res->statut == 'Modification refusée') 
+                                            <span class="badge bg-danger">Modif. Refusée</span>
+                                        @elseif($res->statut == 'Annulée') 
+                                            <span class="badge bg-danger">Annulé</span>
+                                        @else 
+                                            <span class="badge bg-secondary">{{ $res->statut }}</span> 
+                                        @endif
                                     </td>
                                     <td class="text-end">
-                                        <!-- LE BOUTON MODIFIER EST ICI -->
+                                        <!-- LE BOUTON MODIFIER -->
                                         <a href="{{ route('commercial.reservations.edit', $res->id) }}" class="btn btn-sm btn-outline-primary shadow-sm">
                                             <i class="fas fa-edit"></i> Modifier
                                         </a>
